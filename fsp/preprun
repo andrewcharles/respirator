@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#if [ $# -ne 1 ]; then
+#  echo 1&2 Max two arguments please
+#  exit 127
+#fi
+
+confname=spinput.txt
+dirname=$1
+mkdir $dirname
+cp fsph $dirname
+
+if [ $# -eq 2 ]; then
+confname=config_files/$2
+fi
+cp $confname $dirname/spinput.txt
+
+cp sphstate.input $dirname
+cp pbs-script $dirname
+
+# Archive all relevant files
+SRCD="*.f90 makefile spinput.txt sphstate.input"
+OF="fsph-$(date +%Y%m%d).tgz"
+tar -czf $dirname/$OF $SRCD
+
+#cp .moverun $dirname
+
+exit 0

@@ -1,0 +1,534 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 28.12     21.51    21.51       23     0.94     1.25  .__simulation_box_NMOD_minimum_image
+ 14.99     32.98    11.47       21     0.55     1.80  .__neighbour_list_NMOD_find_pair_separations
+ 11.49     41.77     8.79       28     0.31     0.31  .__simulation_box_NMOD_rboxv
+  7.84     47.77     6.00       21     0.29     0.29  .__neighbour_list_NMOD_compress_nlist
+  7.07     53.18     5.41       20     0.27     0.90  .__sphforce_NMOD_calc_sphforce
+  6.09     57.84     4.66       20     0.23     0.23  .__sphforce_NMOD_calc_capillary_pressure
+  4.37     61.18     3.34  1190500     0.00     0.00  .__kernel_NMOD_calckernel
+  4.26     64.44     3.26       20     0.16     0.16  .__sphforce_NMOD_calc_grad_v
+  3.06     66.78     2.34       20     0.12     0.12  .__sphforce_NMOD_calc_viscous_entropy_os
+  1.96     68.28     1.50       20     0.08     0.08  .__sphforce_NMOD_calc_heat_flux
+  1.53     69.45     1.17       21     0.06     0.06  .__density_NMOD_sum_density
+  1.40     70.52     1.07        1     1.07     2.32  .__g_r_NMOD_accum_g_r
+  1.31     71.52     1.00       41     0.02     0.10  .__kernel_NMOD_calc_kernels_all
+  1.28     72.50     0.98        1     0.98     2.84  .__neighbour_list_NMOD_form_nlist
+  0.84     73.14     0.64        5     0.13    13.74  .__sphstep_NMOD_sph_step_runge_kutta
+  0.80     73.75     0.61        1     0.61     0.61  .__neighbour_list_NMOD_all_pairs_method
+  0.77     74.34     0.59       20     0.03     0.03  .__neighbour_list_NMOD_calc_dv
+  0.75     74.91     0.57        5     0.11     0.12  .__particle_NMOD_calc_smoothed_properties
+  0.63     75.39     0.48   568076     0.00     0.00  .__core_potential_NMOD_apply_core_repulsion
+  0.34     75.65     0.26        5     0.05     0.05  .__neighbour_list_NMOD_increment_nlist_drtot
+  0.29     75.87     0.22   568076     0.00     0.00  .__art_viscosity_NMOD_calc_art_viscosity
+  0.26     76.07     0.20                             .fsph
+  0.18     76.21     0.14        5     0.03     0.03  .__neighbour_list_NMOD_reform_nlist_now
+  0.18     76.35     0.14        1     0.14     0.14  .__neighbour_list_NMOD_init_nlist
+  0.04     76.38     0.03       20     0.00     0.00  .__sphforce_NMOD_calc_pi_os
+  0.03     76.40     0.02    22500     0.00     0.00  .__eos_NMOD_vdwtemp
+  0.03     76.42     0.02    18900     0.00     0.00  .__eos_NMOD_vdweos_repulsive
+  0.03     76.44     0.02       20     0.00     0.00  .__sphforce_NMOD_calc_grad_v_os
+  0.01     76.45     0.01       20     0.00     0.00  .__sphforce_NMOD_calc_div_v
+  0.01     76.46     0.01       20     0.00     0.00  .__sphforce_NMOD_calc_pi_one
+  0.01     76.47     0.01        5     0.00     0.00  .__particle_NMOD_check_velocity
+  0.01     76.48     0.01        1     0.01     0.01  .__particle_NMOD_initialise_particles
+  0.01     76.49     0.01        1     0.01     0.01  .__writer_NMOD_write_state
+  0.01     76.50     0.01                             .__core_potential_NMOD__&&_core_potential
+  0.00     76.50     0.00    22500     0.00     0.00  .__eos_NMOD_update_temperature
+  0.00     76.50     0.00    18900     0.00     0.00  .__eos_NMOD_vdweos_attractive
+  0.00     76.50     0.00     5400     0.00     0.00  .__eos_NMOD_vdwenergy
+  0.00     76.50     0.00       20     0.00     0.00  .__reader_NMOD_read_dbl
+  0.00     76.50     0.00       20     0.00     0.00  .__reader_NMOD_read_int
+  0.00     76.50     0.00       20     0.00     0.00  .__sphforce_NMOD_calc_iso_pressure
+  0.00     76.50     0.00       10     0.00     0.00  .__system_properties_NMOD_average_scalar_property
+  0.00     76.50     0.00        8     0.00     0.00  .__reader_NMOD_read_bool
+  0.00     76.50     0.00        5     0.00     0.31  .__simulation_box_NMOD_ac_apply_pbcs
+  0.00     76.50     0.00        5     0.00     0.00  .__system_properties_NMOD_average_temperature
+  0.00     76.50     0.00        5     0.00     0.00  .__system_properties_NMOD_isolated_internal_energy
+  0.00     76.50     0.00        5     0.00     0.00  .__system_properties_NMOD_total_internal_energy
+  0.00     76.50     0.00        5     0.00     0.00  .__system_properties_NMOD_total_kinetic_energy
+  0.00     76.50     0.00        5     0.00     0.00  .__thermostat_NMOD_apply_thermostat
+  0.00     76.50     0.00        5     0.00     0.00  .__writer_NMOD_write_properties
+  0.00     76.50     0.00        1     0.00     0.00  .__boundary_NMOD_rd_boundary_input
+  0.00     76.50     0.00        1     0.00     0.00  .__eos_NMOD_rd_eos_input
+  0.00     76.50     0.00        1     0.00     0.00  .__g_r_NMOD_create_g_r
+  0.00     76.50     0.00        1     0.00     0.00  .__g_r_NMOD_destroy_g_r
+  0.00     76.50     0.00        1     0.00     0.00  .__g_r_NMOD_rdinput_g_r
+  0.00     76.50     0.00        1     0.00     0.00  .__g_r_NMOD_write_g_r
+  0.00     76.50     0.00        1     0.00     0.00  .__kernel_NMOD_rd_kernel_input
+  0.00     76.50     0.00        1     0.00     0.00  .__neighbour_list_NMOD_rd_nlist_input
+  0.00     76.50     0.00        1     0.00     0.00  .__particle_NMOD_create_particles
+  0.00     76.50     0.00        1     0.00     0.00  .__particle_NMOD_destroy_particles
+  0.00     76.50     0.00        1     0.00     0.00  .__particle_NMOD_rd_particle_input
+  0.00     76.50     0.00        1     0.00     0.00  .__reader_NMOD_read_input
+  0.00     76.50     0.00        1     0.00     0.00  .__simulation_box_NMOD_create_box
+  0.00     76.50     0.00        1     0.00     0.00  .__simulation_box_NMOD_destroy_box
+  0.00     76.50     0.00        1     0.00     0.00  .__simulation_box_NMOD_init_box
+  0.00     76.50     0.00        1     0.00     0.00  .__simulation_box_NMOD_rd_box_input
+  0.00     76.50     0.00        1     0.00     0.00  .__simulation_box_NMOD_volume
+  0.00     76.50     0.00        1     0.00     0.00  .__sllod_NMOD_rd_sllod_input
+  0.00     76.50     0.00        1     0.00     0.00  .__thermostat_NMOD_rd_thermostat_input
+  0.00     76.50     0.00        1     0.00     0.00  .__writer_NMOD_clearfile
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.01% of 76.50 seconds
+
+index % time    self  children    called     name
+                                   1             .fsph [1]
+[1]    100.0    0.20   76.29       0+1       .fsph [1]
+                0.64   68.08       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+                0.98    1.86       1/1           .__neighbour_list_NMOD_form_nlist [12]
+                1.07    1.25       1/1           .__g_r_NMOD_accum_g_r [14]
+                0.55    1.25       1/21          .__neighbour_list_NMOD_find_pair_separations [3]
+                0.29    0.00       1/21          .__neighbour_list_NMOD_compress_nlist [7]
+                0.14    0.00       1/1           .__neighbour_list_NMOD_init_nlist [25]
+                0.02    0.08       1/41          .__kernel_NMOD_calc_kernels_all [9]
+                0.06    0.00       1/21          .__density_NMOD_sum_density [17]
+                0.01    0.00       5/5           .__particle_NMOD_check_velocity [34]
+                0.01    0.00       1/1           .__particle_NMOD_initialise_particles [35]
+                0.01    0.00       1/1           .__writer_NMOD_write_state [36]
+                0.00    0.00     900/18900       .__eos_NMOD_vdweos_repulsive [29]
+                0.00    0.00     900/5400        .__eos_NMOD_vdwenergy [39]
+                0.00    0.00     900/18900       .__eos_NMOD_vdweos_attractive [38]
+                0.00    0.00       5/5           .__writer_NMOD_write_properties [49]
+                0.00    0.00       1/1           .__reader_NMOD_read_input [61]
+                0.00    0.00       1/1           .__eos_NMOD_rd_eos_input [51]
+                0.00    0.00       1/1           .__kernel_NMOD_rd_kernel_input [56]
+                0.00    0.00       1/1           .__boundary_NMOD_rd_boundary_input [50]
+                0.00    0.00       1/1           .__particle_NMOD_create_particles [58]
+                0.00    0.00       1/1           .__particle_NMOD_rd_particle_input [60]
+                0.00    0.00       1/1           .__thermostat_NMOD_rd_thermostat_input [68]
+                0.00    0.00       1/1           .__simulation_box_NMOD_rd_box_input [65]
+                0.00    0.00       1/1           .__simulation_box_NMOD_create_box [62]
+                0.00    0.00       1/1           .__neighbour_list_NMOD_rd_nlist_input [57]
+                0.00    0.00       1/1           .__sllod_NMOD_rd_sllod_input [67]
+                0.00    0.00       1/1           .__g_r_NMOD_rdinput_g_r [54]
+                0.00    0.00       1/1           .__simulation_box_NMOD_init_box [64]
+                0.00    0.00       1/1           .__g_r_NMOD_create_g_r [52]
+                0.00    0.00       1/1           .__g_r_NMOD_write_g_r [55]
+                0.00    0.00       1/1           .__g_r_NMOD_destroy_g_r [53]
+                0.00    0.00       1/1           .__particle_NMOD_destroy_particles [59]
+                0.00    0.00       1/1           .__simulation_box_NMOD_destroy_box [63]
+                0.00    0.00       1/1           .__writer_NMOD_clearfile [69]
+                                   1             .fsph [1]
+-----------------------------------------------
+                0.64   68.08       5/5           .fsph [1]
+[2]     89.8    0.64   68.08       5         .__sphstep_NMOD_sph_step_runge_kutta [2]
+               10.92   24.98      20/21          .__neighbour_list_NMOD_find_pair_separations [3]
+                5.41   12.55      20/20          .__sphforce_NMOD_calc_sphforce [5]
+                5.71    0.00      20/21          .__neighbour_list_NMOD_compress_nlist [7]
+                0.98    3.19      40/41          .__kernel_NMOD_calc_kernels_all [9]
+                0.00    1.57       5/5           .__simulation_box_NMOD_ac_apply_pbcs [15]
+                1.11    0.05      20/21          .__density_NMOD_sum_density [17]
+                0.59    0.00      20/20          .__neighbour_list_NMOD_calc_dv [19]
+                0.57    0.01       5/5           .__particle_NMOD_calc_smoothed_properties [20]
+                0.26    0.00       5/5           .__neighbour_list_NMOD_increment_nlist_drtot [22]
+                0.14    0.00       5/5           .__neighbour_list_NMOD_reform_nlist_now [24]
+                0.00    0.02   22500/22500       .__eos_NMOD_update_temperature [27]
+                0.00    0.00       5/5           .__thermostat_NMOD_apply_thermostat [48]
+-----------------------------------------------
+                0.55    1.25       1/21          .fsph [1]
+               10.92   24.98      20/21          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[3]     49.3   11.47   26.23      21         .__neighbour_list_NMOD_find_pair_separations [3]
+               19.64    6.59      21/23          .__simulation_box_NMOD_minimum_image [4]
+-----------------------------------------------
+                0.94    0.31       1/23          .__neighbour_list_NMOD_form_nlist [12]
+                0.94    0.31       1/23          .__g_r_NMOD_accum_g_r [14]
+               19.64    6.59      21/23          .__neighbour_list_NMOD_find_pair_separations [3]
+[4]     37.6   21.51    7.22      23         .__simulation_box_NMOD_minimum_image [4]
+                7.22    0.00      23/28          .__simulation_box_NMOD_rboxv [6]
+-----------------------------------------------
+                5.41   12.55      20/20          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[5]     23.5    5.41   12.55      20         .__sphforce_NMOD_calc_sphforce [5]
+                4.66    0.00      20/20          .__sphforce_NMOD_calc_capillary_pressure [8]
+                3.26    0.00      20/20          .__sphforce_NMOD_calc_grad_v [11]
+                2.34    0.00      20/20          .__sphforce_NMOD_calc_viscous_entropy_os [13]
+                1.50    0.00      20/20          .__sphforce_NMOD_calc_heat_flux [16]
+                0.48    0.00  568076/568076      .__core_potential_NMOD_apply_core_repulsion [21]
+                0.22    0.00  568076/568076      .__art_viscosity_NMOD_calc_art_viscosity [23]
+                0.03    0.00      20/20          .__sphforce_NMOD_calc_pi_os [26]
+                0.02    0.00      20/20          .__sphforce_NMOD_calc_grad_v_os [30]
+                0.00    0.02      20/20          .__sphforce_NMOD_calc_iso_pressure [31]
+                0.01    0.00      20/20          .__sphforce_NMOD_calc_div_v [32]
+                0.01    0.00      20/20          .__sphforce_NMOD_calc_pi_one [33]
+-----------------------------------------------
+                1.57    0.00       5/28          .__simulation_box_NMOD_ac_apply_pbcs [15]
+                7.22    0.00      23/28          .__simulation_box_NMOD_minimum_image [4]
+[6]     11.5    8.79    0.00      28         .__simulation_box_NMOD_rboxv [6]
+-----------------------------------------------
+                0.29    0.00       1/21          .fsph [1]
+                5.71    0.00      20/21          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[7]      7.8    6.00    0.00      21         .__neighbour_list_NMOD_compress_nlist [7]
+-----------------------------------------------
+                4.66    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[8]      6.1    4.66    0.00      20         .__sphforce_NMOD_calc_capillary_pressure [8]
+-----------------------------------------------
+                0.02    0.08       1/41          .fsph [1]
+                0.98    3.19      40/41          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[9]      5.6    1.00    3.27      41         .__kernel_NMOD_calc_kernels_all [9]
+                3.27    0.00 1167100/1190500     .__kernel_NMOD_calckernel [10]
+-----------------------------------------------
+                0.01    0.00    4500/1190500     .__particle_NMOD_calc_smoothed_properties [20]
+                0.05    0.00   18900/1190500     .__density_NMOD_sum_density [17]
+                3.27    0.00 1167100/1190500     .__kernel_NMOD_calc_kernels_all [9]
+[10]     4.4    3.34    0.00 1190500         .__kernel_NMOD_calckernel [10]
+-----------------------------------------------
+                3.26    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[11]     4.3    3.26    0.00      20         .__sphforce_NMOD_calc_grad_v [11]
+-----------------------------------------------
+                0.98    1.86       1/1           .fsph [1]
+[12]     3.7    0.98    1.86       1         .__neighbour_list_NMOD_form_nlist [12]
+                0.94    0.31       1/23          .__simulation_box_NMOD_minimum_image [4]
+                0.61    0.00       1/1           .__neighbour_list_NMOD_all_pairs_method [18]
+-----------------------------------------------
+                2.34    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[13]     3.1    2.34    0.00      20         .__sphforce_NMOD_calc_viscous_entropy_os [13]
+-----------------------------------------------
+                1.07    1.25       1/1           .fsph [1]
+[14]     3.0    1.07    1.25       1         .__g_r_NMOD_accum_g_r [14]
+                0.94    0.31       1/23          .__simulation_box_NMOD_minimum_image [4]
+-----------------------------------------------
+                0.00    1.57       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+[15]     2.1    0.00    1.57       5         .__simulation_box_NMOD_ac_apply_pbcs [15]
+                1.57    0.00       5/28          .__simulation_box_NMOD_rboxv [6]
+-----------------------------------------------
+                1.50    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[16]     2.0    1.50    0.00      20         .__sphforce_NMOD_calc_heat_flux [16]
+-----------------------------------------------
+                0.06    0.00       1/21          .fsph [1]
+                1.11    0.05      20/21          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[17]     1.6    1.17    0.05      21         .__density_NMOD_sum_density [17]
+                0.05    0.00   18900/1190500     .__kernel_NMOD_calckernel [10]
+-----------------------------------------------
+                0.61    0.00       1/1           .__neighbour_list_NMOD_form_nlist [12]
+[18]     0.8    0.61    0.00       1         .__neighbour_list_NMOD_all_pairs_method [18]
+-----------------------------------------------
+                0.59    0.00      20/20          .__sphstep_NMOD_sph_step_runge_kutta [2]
+[19]     0.8    0.59    0.00      20         .__neighbour_list_NMOD_calc_dv [19]
+-----------------------------------------------
+                0.57    0.01       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+[20]     0.8    0.57    0.01       5         .__particle_NMOD_calc_smoothed_properties [20]
+                0.01    0.00    4500/1190500     .__kernel_NMOD_calckernel [10]
+-----------------------------------------------
+                0.48    0.00  568076/568076      .__sphforce_NMOD_calc_sphforce [5]
+[21]     0.6    0.48    0.00  568076         .__core_potential_NMOD_apply_core_repulsion [21]
+-----------------------------------------------
+                0.26    0.00       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+[22]     0.3    0.26    0.00       5         .__neighbour_list_NMOD_increment_nlist_drtot [22]
+-----------------------------------------------
+                0.22    0.00  568076/568076      .__sphforce_NMOD_calc_sphforce [5]
+[23]     0.3    0.22    0.00  568076         .__art_viscosity_NMOD_calc_art_viscosity [23]
+-----------------------------------------------
+                0.14    0.00       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+[24]     0.2    0.14    0.00       5         .__neighbour_list_NMOD_reform_nlist_now [24]
+-----------------------------------------------
+                0.14    0.00       1/1           .fsph [1]
+[25]     0.2    0.14    0.00       1         .__neighbour_list_NMOD_init_nlist [25]
+-----------------------------------------------
+                0.03    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[26]     0.0    0.03    0.00      20         .__sphforce_NMOD_calc_pi_os [26]
+-----------------------------------------------
+                0.00    0.02   22500/22500       .__sphstep_NMOD_sph_step_runge_kutta [2]
+[27]     0.0    0.00    0.02   22500         .__eos_NMOD_update_temperature [27]
+                0.02    0.00   22500/22500       .__eos_NMOD_vdwtemp [28]
+-----------------------------------------------
+                0.02    0.00   22500/22500       .__eos_NMOD_update_temperature [27]
+[28]     0.0    0.02    0.00   22500         .__eos_NMOD_vdwtemp [28]
+-----------------------------------------------
+                0.00    0.00     900/18900       .fsph [1]
+                0.02    0.00   18000/18900       .__sphforce_NMOD_calc_iso_pressure [31]
+[29]     0.0    0.02    0.00   18900         .__eos_NMOD_vdweos_repulsive [29]
+-----------------------------------------------
+                0.02    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[30]     0.0    0.02    0.00      20         .__sphforce_NMOD_calc_grad_v_os [30]
+-----------------------------------------------
+                0.00    0.02      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[31]     0.0    0.00    0.02      20         .__sphforce_NMOD_calc_iso_pressure [31]
+                0.02    0.00   18000/18900       .__eos_NMOD_vdweos_repulsive [29]
+                0.00    0.00   18000/18900       .__eos_NMOD_vdweos_attractive [38]
+-----------------------------------------------
+                0.01    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[32]     0.0    0.01    0.00      20         .__sphforce_NMOD_calc_div_v [32]
+-----------------------------------------------
+                0.01    0.00      20/20          .__sphforce_NMOD_calc_sphforce [5]
+[33]     0.0    0.01    0.00      20         .__sphforce_NMOD_calc_pi_one [33]
+-----------------------------------------------
+                0.01    0.00       5/5           .fsph [1]
+[34]     0.0    0.01    0.00       5         .__particle_NMOD_check_velocity [34]
+-----------------------------------------------
+                0.01    0.00       1/1           .fsph [1]
+[35]     0.0    0.01    0.00       1         .__particle_NMOD_initialise_particles [35]
+-----------------------------------------------
+                0.01    0.00       1/1           .fsph [1]
+[36]     0.0    0.01    0.00       1         .__writer_NMOD_write_state [36]
+-----------------------------------------------
+                                                 <spontaneous>
+[37]     0.0    0.01    0.00                 .__core_potential_NMOD__&&_core_potential [37]
+-----------------------------------------------
+                0.00    0.00     900/18900       .fsph [1]
+                0.00    0.00   18000/18900       .__sphforce_NMOD_calc_iso_pressure [31]
+[38]     0.0    0.00    0.00   18900         .__eos_NMOD_vdweos_attractive [38]
+-----------------------------------------------
+                0.00    0.00     900/5400        .fsph [1]
+                0.00    0.00    4500/5400        .__thermostat_NMOD_apply_thermostat [48]
+[39]     0.0    0.00    0.00    5400         .__eos_NMOD_vdwenergy [39]
+-----------------------------------------------
+                0.00    0.00       1/20          .__thermostat_NMOD_rd_thermostat_input [68]
+                0.00    0.00       2/20          .__kernel_NMOD_rd_kernel_input [56]
+                0.00    0.00       3/20          .__particle_NMOD_rd_particle_input [60]
+                0.00    0.00       4/20          .__eos_NMOD_rd_eos_input [51]
+                0.00    0.00      10/20          .__reader_NMOD_read_input [61]
+[40]     0.0    0.00    0.00      20         .__reader_NMOD_read_dbl [40]
+-----------------------------------------------
+                0.00    0.00       1/20          .__eos_NMOD_rd_eos_input [51]
+                0.00    0.00       1/20          .__thermostat_NMOD_rd_thermostat_input [68]
+                0.00    0.00       2/20          .__simulation_box_NMOD_rd_box_input [65]
+                0.00    0.00       2/20          .__kernel_NMOD_rd_kernel_input [56]
+                0.00    0.00      14/20          .__reader_NMOD_read_input [61]
+[41]     0.0    0.00    0.00      20         .__reader_NMOD_read_int [41]
+-----------------------------------------------
+                0.00    0.00      10/10          .__writer_NMOD_write_properties [49]
+[42]     0.0    0.00    0.00      10         .__system_properties_NMOD_average_scalar_property [42]
+-----------------------------------------------
+                0.00    0.00       4/8           .__reader_NMOD_read_input [61]
+                0.00    0.00       4/8           .__boundary_NMOD_rd_boundary_input [50]
+[43]     0.0    0.00    0.00       8         .__reader_NMOD_read_bool [43]
+-----------------------------------------------
+                0.00    0.00       5/5           .__thermostat_NMOD_apply_thermostat [48]
+[44]     0.0    0.00    0.00       5         .__system_properties_NMOD_average_temperature [44]
+-----------------------------------------------
+                0.00    0.00       5/5           .__writer_NMOD_write_properties [49]
+[45]     0.0    0.00    0.00       5         .__system_properties_NMOD_isolated_internal_energy [45]
+-----------------------------------------------
+                0.00    0.00       5/5           .__writer_NMOD_write_properties [49]
+[46]     0.0    0.00    0.00       5         .__system_properties_NMOD_total_internal_energy [46]
+-----------------------------------------------
+                0.00    0.00       5/5           .__writer_NMOD_write_properties [49]
+[47]     0.0    0.00    0.00       5         .__system_properties_NMOD_total_kinetic_energy [47]
+-----------------------------------------------
+                0.00    0.00       5/5           .__sphstep_NMOD_sph_step_runge_kutta [2]
+[48]     0.0    0.00    0.00       5         .__thermostat_NMOD_apply_thermostat [48]
+                0.00    0.00    4500/5400        .__eos_NMOD_vdwenergy [39]
+                0.00    0.00       5/5           .__system_properties_NMOD_average_temperature [44]
+-----------------------------------------------
+                0.00    0.00       5/5           .fsph [1]
+[49]     0.0    0.00    0.00       5         .__writer_NMOD_write_properties [49]
+                0.00    0.00      10/10          .__system_properties_NMOD_average_scalar_property [42]
+                0.00    0.00       5/5           .__system_properties_NMOD_total_kinetic_energy [47]
+                0.00    0.00       5/5           .__system_properties_NMOD_total_internal_energy [46]
+                0.00    0.00       5/5           .__system_properties_NMOD_isolated_internal_energy [45]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[50]     0.0    0.00    0.00       1         .__boundary_NMOD_rd_boundary_input [50]
+                0.00    0.00       4/8           .__reader_NMOD_read_bool [43]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[51]     0.0    0.00    0.00       1         .__eos_NMOD_rd_eos_input [51]
+                0.00    0.00       4/20          .__reader_NMOD_read_dbl [40]
+                0.00    0.00       1/20          .__reader_NMOD_read_int [41]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[52]     0.0    0.00    0.00       1         .__g_r_NMOD_create_g_r [52]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[53]     0.0    0.00    0.00       1         .__g_r_NMOD_destroy_g_r [53]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[54]     0.0    0.00    0.00       1         .__g_r_NMOD_rdinput_g_r [54]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[55]     0.0    0.00    0.00       1         .__g_r_NMOD_write_g_r [55]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[56]     0.0    0.00    0.00       1         .__kernel_NMOD_rd_kernel_input [56]
+                0.00    0.00       2/20          .__reader_NMOD_read_int [41]
+                0.00    0.00       2/20          .__reader_NMOD_read_dbl [40]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[57]     0.0    0.00    0.00       1         .__neighbour_list_NMOD_rd_nlist_input [57]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[58]     0.0    0.00    0.00       1         .__particle_NMOD_create_particles [58]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[59]     0.0    0.00    0.00       1         .__particle_NMOD_destroy_particles [59]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[60]     0.0    0.00    0.00       1         .__particle_NMOD_rd_particle_input [60]
+                0.00    0.00       3/20          .__reader_NMOD_read_dbl [40]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[61]     0.0    0.00    0.00       1         .__reader_NMOD_read_input [61]
+                0.00    0.00      14/20          .__reader_NMOD_read_int [41]
+                0.00    0.00      10/20          .__reader_NMOD_read_dbl [40]
+                0.00    0.00       4/8           .__reader_NMOD_read_bool [43]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[62]     0.0    0.00    0.00       1         .__simulation_box_NMOD_create_box [62]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[63]     0.0    0.00    0.00       1         .__simulation_box_NMOD_destroy_box [63]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[64]     0.0    0.00    0.00       1         .__simulation_box_NMOD_init_box [64]
+                0.00    0.00       1/1           .__simulation_box_NMOD_volume [66]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[65]     0.0    0.00    0.00       1         .__simulation_box_NMOD_rd_box_input [65]
+                0.00    0.00       2/20          .__reader_NMOD_read_int [41]
+-----------------------------------------------
+                0.00    0.00       1/1           .__simulation_box_NMOD_init_box [64]
+[66]     0.0    0.00    0.00       1         .__simulation_box_NMOD_volume [66]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[67]     0.0    0.00    0.00       1         .__sllod_NMOD_rd_sllod_input [67]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[68]     0.0    0.00    0.00       1         .__thermostat_NMOD_rd_thermostat_input [68]
+                0.00    0.00       1/20          .__reader_NMOD_read_int [41]
+                0.00    0.00       1/20          .__reader_NMOD_read_dbl [40]
+-----------------------------------------------
+                0.00    0.00       1/1           .fsph [1]
+[69]     0.0    0.00    0.00       1         .__writer_NMOD_clearfile [69]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+
+Index by function name
+
+  [23] .__art_viscosity_NMOD_calc_art_viscosity [12] .__neighbour_list_NMOD_form_nlist [67] .__sllod_NMOD_rd_sllod_input
+  [50] .__boundary_NMOD_rd_boundary_input [22] .__neighbour_list_NMOD_increment_nlist_drtot [8] .__sphforce_NMOD_calc_capillary_pressure
+  [37] .__core_potential_NMOD__&&_core_potential [25] .__neighbour_list_NMOD_init_nlist [32] .__sphforce_NMOD_calc_div_v
+  [21] .__core_potential_NMOD_apply_core_repulsion [57] .__neighbour_list_NMOD_rd_nlist_input [11] .__sphforce_NMOD_calc_grad_v
+  [17] .__density_NMOD_sum_density [24] .__neighbour_list_NMOD_reform_nlist_now [30] .__sphforce_NMOD_calc_grad_v_os
+  [51] .__eos_NMOD_rd_eos_input [20] .__particle_NMOD_calc_smoothed_properties [16] .__sphforce_NMOD_calc_heat_flux
+  [27] .__eos_NMOD_update_temperature [34] .__particle_NMOD_check_velocity [31] .__sphforce_NMOD_calc_iso_pressure
+  [39] .__eos_NMOD_vdwenergy  [58] .__particle_NMOD_create_particles [33] .__sphforce_NMOD_calc_pi_one
+  [38] .__eos_NMOD_vdweos_attractive [59] .__particle_NMOD_destroy_particles [26] .__sphforce_NMOD_calc_pi_os
+  [29] .__eos_NMOD_vdweos_repulsive [35] .__particle_NMOD_initialise_particles [5] .__sphforce_NMOD_calc_sphforce
+  [28] .__eos_NMOD_vdwtemp    [60] .__particle_NMOD_rd_particle_input [13] .__sphforce_NMOD_calc_viscous_entropy_os
+  [14] .__g_r_NMOD_accum_g_r  [43] .__reader_NMOD_read_bool [2] .__sphstep_NMOD_sph_step_runge_kutta
+  [52] .__g_r_NMOD_create_g_r [40] .__reader_NMOD_read_dbl [42] .__system_properties_NMOD_average_scalar_property
+  [53] .__g_r_NMOD_destroy_g_r [61] .__reader_NMOD_read_input [44] .__system_properties_NMOD_average_temperature
+  [54] .__g_r_NMOD_rdinput_g_r [41] .__reader_NMOD_read_int [45] .__system_properties_NMOD_isolated_internal_energy
+  [55] .__g_r_NMOD_write_g_r  [15] .__simulation_box_NMOD_ac_apply_pbcs [46] .__system_properties_NMOD_total_internal_energy
+   [9] .__kernel_NMOD_calc_kernels_all [62] .__simulation_box_NMOD_create_box [47] .__system_properties_NMOD_total_kinetic_energy
+  [10] .__kernel_NMOD_calckernel [63] .__simulation_box_NMOD_destroy_box [48] .__thermostat_NMOD_apply_thermostat
+  [56] .__kernel_NMOD_rd_kernel_input [64] .__simulation_box_NMOD_init_box [68] .__thermostat_NMOD_rd_thermostat_input
+  [18] .__neighbour_list_NMOD_all_pairs_method [4] .__simulation_box_NMOD_minimum_image [69] .__writer_NMOD_clearfile
+  [19] .__neighbour_list_NMOD_calc_dv [6] .__simulation_box_NMOD_rboxv [49] .__writer_NMOD_write_properties
+   [7] .__neighbour_list_NMOD_compress_nlist [65] .__simulation_box_NMOD_rd_box_input [36] .__writer_NMOD_write_state
+   [3] .__neighbour_list_NMOD_find_pair_separations [66] .__simulation_box_NMOD_volume [1] .fsph

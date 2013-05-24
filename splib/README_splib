@@ -1,0 +1,17 @@
+A library of modules for working with smooth particles.
+
+Combination of pure Python and Cython modules.
+
+spkernel.py: Smooth particle kernel functions.
+
+spdensity.py
+
+pairsep.pyx
+
+neighbours.py
+
+interpolate.py:
+
+interpolate.pyx
+
+

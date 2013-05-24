@@ -1,0 +1,19 @@
+#! /bin/bash
+#../../matlab/plot_scripts/plot_density_histogram.m
+
+ls sphstate.* > list
+ls gofr.* > gofrlist
+ls v_dist* > vlist
+#j=0
+#for i in `cat list` ; do
+#j=$(($j+1))
+##d=`awk 'NR==$j' gofrlist`
+##e=`awk 'NR==$j' vlist`
+#d=`cat gofrlist | head -$j | tail -1`
+#e=`cat vlist | head -$j | tail -1`
+#echo item: $j, $i, $d, $e
+#sed -e "s/INPUTFILE/$i/" -e "s/OUTPUTFILE/$i/" -e "s/GOFRFILE/$d/" -e "s/VFILE/$e/" sphplot.plt | gnuplot
+#done
+
+./plotsph.py
+gnuplot sphprop.plt

@@ -1,0 +1,95 @@
+
+# FIRST INSTALL SOME REQUIRED TOOLS
+-----------------------------------
+sudo apt-get install vim-gnome
+sudo apt-get install mercurial
+
+# THEN GET THE CODE
+-----------------------------------
+hg clone https://YOUR-USERNAME@bitbucket.org/ac1201/smoothparticles rsp
+(Will need to be given access to the repo)
+
+
+#INSTALL PYTHON DEP PACKAGES
+-----------------------------------
+
+To make the python dependencies easy, install pip, a package manager.
+
+sudo apt-get install libatlas-base-dev gfortran
+
+Also sudo apt-get install the following:
+
+	ipython
+	python-dev
+	libhdf5-dev
+	libhdf5-serial-dev
+	libnetcdf-dev
+	g++
+	libz-dev 
+	libpng-dev 
+	libfreetype6-dev python-dev
+	mencoder
+	python-pip
+    python-tk (for matplotlib gui)
+    python-wxtools (for matplotlib gui) 
+
+Now pip install
+
+	sudo pip install numpy
+	sudo pip install scipy
+	sudo pip install matplotlib
+	sudo pip install netcdf4
+	sudo pip install Cython
+
+*At this point I should mention that some packages install ok with
+apt, and others with pip. Pip will get more up-to-date versions,
+but might not install all the binary dependencies.*
+
+Now build everything:
+
+./build.sh
+
+Now move into the fsp directory and test with
+
+python run.py --test 1
+
+
+
+
+
+STACK
+
+
+ ------------------------------------------------------------
+P [   scipy     matplotlib  netcdf4 ]
+Y [   Cython ]
+T [                numpy ]
+H [ ]
+O [  	    ipython ]
+N [                pip                                      ]
+ ------------------------------------------------------------
+A [                                  ncks                   ]
+P [                        convert                          ]
+P [	   python-dev                          mencoder     ]
+S [                                                         ]
+ ------------------------------------------------------------
+L [           libnetcdf-dev                                 ]
+I [      libhdf5-dev libhdf5-serial-dev                     ]
+B [                                                         ]
+R [ g++                                                     ]
+A [ libfreetype6-dev                                        ]
+R [       libz-dev   libpng-dev                             ]
+I [                                                         ]
+E [                  gfortran                               ]
+S [                                                         ]
+ ------------------------------------------------------------
+
+	
+	
+	
+	
+	
+	
+	
+	
+	python-pip

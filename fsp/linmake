@@ -1,0 +1,78 @@
+# Makefile for Fortran SPH program
+# Andrew Charles Jul 2008
+# Based on mmd2 makefile by P.Daivis
+# guidance from 
+# http://mrbook.org/tutorials/make/
+# todo seperate source and build directories
+
+F90C = gfortran
+#F90FLAGS = -O2 -ipo 
+F90FLAGS = -p -w
+#DEBUGFLAGS = -heap-arrays -check all -warn all -g
+#F90FLAGS = -check all -warn all -g
+
+#on edda
+#F90C = xlf90 -q64 -qsuffix=f=f90
+
+#-ipo -O3 -no-prec-div -xP
+
+SRCDIR = ./src
+
+#SRCS = *.f90
+SOURCES =  \
+	global.f90 \
+	reader.f90 \
+	simulation_box.f90 \
+	neighbour_list.f90 \
+	eos.f90 \
+	particle.f90 \
+	kernel.f90 \
+	core_potential.f90 \
+	system_properties.f90 \
+	thermostat.f90 \
+	writer.f90 \
+	art_viscosity.f90 \
+	density.f90 \
+	boundary.f90 \
+	sphforce.f90 \
+	sphforce_ab.f90 \
+	sphstep.f90 \
+	fsph.f90
+
+OBJECTS = $(SOURCES:.f90=.o)
+
+PROG = fsph
+
+.SUFFIXES: .f90 .o
+
+# Default rule to create object files from FORTRAN source.
+
+.f90.o:
+	${F90C} ${F90FLAGS} -c $(@:.o=.f90)
+
+# Rule for making fsph
+
+${PROG}: $(OBJECTS)
+	${F90C} $(F90FLAGS) $(OBJECTS) -o $@
+	
+all: ${SOURCES} ${PROG}
+
+debug: $(OBJECTS)
+	${F90C} $(F90FLAGS) $(DEBUGFLAGS) -o ${PROG} $(OBJECTS)
+
+doc:
+	doxygen spamdox.conf
+
+#Delete the object files
+clean:
+	rm -f *.o
+	rm -f *.mod
+	rm -f neighbour.00*
+	rm -f snap.00*
+	rm -f sphstate.00*
+	rm -f gofr.0*
+	rm -f properties.output
+	rm -f list
+
+put:
+	rsync -avtub --exclude "*.o" --exclude "*.mod" --exclude "fsph" --exclude "*.svn*" --exclude "makefile" ~/masters/active/fsph/ acharles@edda.vpac.org:~/fsph/

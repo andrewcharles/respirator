@@ -1,0 +1,246 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A manual for my SPAC smooth particle code.
+%
+% Andrew Charles, 2013
+%
+% based in part on Andre Miede's thesis latex template. I guess I still
+% owe him a postcard ...
+%
+% Fly
+% On your wings
+% Like an eagle
+% Fly as high as the sky
+
+\documentclass[ twoside,openright,titlepage,fleqn,%1headlines,% 
+                pointlessnumbers,headinclude,BCOR5mm,%
+                10pt,a4paper,footinclude,cleardoubleempty,abstractoff
+                ]{scrreprt}
+
+\listfiles
+\newcommand{\myTitle}
+{SPAC: A Fortran Smoothed Particle Code for Vapour-Liquid phase Coexistence \xspace}
+\newcommand{\myDegree}{A Fortran code \xspace}
+\newcommand{\myOtherProf}{Gary Bryant\xspace}
+\newcommand{\myName}{Andrew Charles \xspace}
+\newcommand{\myProf}{Peter Daivis \xspace}
+\newcommand{\myDepartment}{Condensed Matter Theory Research Group \xspace}
+\newcommand{\myFaculty}{School of Applied Science \xspace}
+\newcommand{\myUni}{\protect{RMIT University}\xspace}
+\newcommand{\myLocation}{Melbourne \xspace}
+\newcommand{\myTime}{2008 \xspace}
+\usepackage[latin1]{inputenc} 
+\usepackage[ngerman,american]{babel}           
+\usepackage[square,numbers]{natbib} 
+\usepackage{classicthesis-ldpkg}
+
+%*******************************************************
+% Options for classicthesis.sty:
+% tocaligned eulerchapternumbers drafting linedheaders listsseparated
+% subfigure nochapters beramono eulermath parts minionpro pdfspacing
+\usepackage[eulerchapternumbers,drafting,pdfspacing,%
+            subfigure,eulermath,parts]{classicthesis}
+\newlength{\abcd} % for ab..z string length calculation
+\newcommand{\myfloatalign}{\centering} % how all the floats will be aligned
+\setlength{\extrarowheight}{3pt} % increase table row height
+% ********************************************************************
+% Captions look and feel
+%*******************************************************
+\captionsetup{format=hang,font=small}
+% ********************************************************************
+% ********************************************************************
+% Hyperreferences
+%*******************************************************
+\hypersetup{%
+    colorlinks=true,linktocpage=true,pdfstartpage=3,pdfstartview=FitV,%
+    breaklinks=true,pdfpagemode=UseNone,pageanchor=true,%
+    pdfpagemode=UseOutlines,%
+    plainpages=false, bookmarksnumbered, bookmarksopen=true,%
+    bookmarksopenlevel=1,%
+    hypertexnames=true, pdfhighlight=/O,%hyperfootnotes=true,%nesting=true,%
+    urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen,
+    %pagecolor=RoyalBlue,%
+    % uncomment the following line if you want to have black links 
+    %(e.g., for printing)
+    %urlcolor=Black, linkcolor=Black, citecolor=Black, %pagecolor=Black,%
+    pdftitle={\myTitle},%
+    pdfauthor={\textcopyright\ \myName, \myUni, \myFaculty},%
+    pdfsubject={},%
+    pdfkeywords={},%
+    pdfcreator={pdfLaTeX},%
+    pdfproducer={LaTeX with hyperref and classicthesis}%
+}
+
+\begin{document}
+\frenchspacing
+\raggedbottom
+\selectlanguage{american} % american ngerman
+\pagenumbering{roman}
+\pagestyle{plain}
+
+%*******************************************************
+% Titlepage
+%*******************************************************
+\begin{titlepage}
+    \begin{center}
+        \large  
+        \hfill
+        \vfill
+        {\color{Maroon}\spacedallcaps{\myTitle}} \\ \bigskip
+        \spacedlowsmallcaps{\myName}
+        \vfill
+        %\includegraphics[width=6cm]{gfx/im00092.png} \\ \medskip
+        \myDegree \\ \medskip   
+        \myDepartment \\                            
+        \myFaculty \\
+        \myUni \\ \bigskip
+        \myTime
+        \vfill                      
+    \end{center}        
+\end{titlepage}   
+
+\cleardoublepage
+
+%*******************************************************
+% Abstract
+%*******************************************************
+%\renewcommand{\abstractname}{Abstract}
+\pdfbookmark[1]{Abstract}{Abstract}
+\begingroup
+\let\clearpage\relax
+\let\cleardoublepage\relax
+\let\cleardoublepage\relax
+
+\chapter*{Abstract}
+This documents the Fortran 90 code known as SPAC, a code for solving two
+dimensional smooth particle systems with a focus on liquid-vapour
+coexistence.
+
+\endgroup			
+
+\vfill
+
+\cleardoublepage
+
+%*******************************************************
+% Acknowledgments
+%*******************************************************
+\pdfbookmark[1]{Acknowledgments}{acknowledgments}
+
+\begin{flushright}{\slshape}
+If you optimize everything,
+you will always be unhappy. \\
+- Donald Knuth (source?)
+\end{flushright}
+
+
+\bigskip
+\begingroup
+\let\clearpage\relax
+\let\cleardoublepage\relax
+\let\cleardoublepage\relax
+\chapter*{Acknowledgments}
+Bill Hoover's SPAM book captured the essence of the general picture.
+The other SPH book, by Liu and Liu's was an often consulted source of technical
+information, and their code had a considerable influence on the final state of this
+code. My PhD supervisor Peter Daivis provided frequent encouragement and input
+and his molecular dynamics code also provided a basis for development of this code.
+The test targets for the development of this code included images in papers by Sigalotti et al.
+\endgroup
+
+
+\pagestyle{scrheadings}
+\cleardoublepage
+
+%*******************************************************
+% Table of Contents
+%*******************************************************
+%\phantomsection
+\refstepcounter{dummy}
+\pdfbookmark[1]{\contentsname}{tableofcontents}
+\setcounter{tocdepth}{2}
+\tableofcontents
+\markboth{\spacedlowsmallcaps{\contentsname}}{\spacedlowsmallcaps{\contentsname}} 
+%*******************************************************
+% work-around to have small caps also here in the headline
+% will not work at this place if the TOC has more than 2 pages
+% use \manualmark and then the \markboth as above
+% later a modification of \automark[section]{chapter}
+%*******************************************************
+% List of Figures and of the Tables
+%*******************************************************
+\clearpage
+
+\begingroup 
+    \let\clearpage\relax
+    \let\cleardoublepage\relax
+    \let\cleardoublepage\relax
+    %*******************************************************
+    % List of Figures
+    %*******************************************************    
+    %\phantomsection 
+    \refstepcounter{dummy}
+    %\addcontentsline{toc}{chapter}{\listfigurename}
+    \pdfbookmark[1]{\listfigurename}{lof}
+    \listoffigures
+
+    \vspace*{8ex}
+
+    %*******************************************************
+    % List of Tables
+    %*******************************************************
+    %\phantomsection 
+    \refstepcounter{dummy}
+    %\addcontentsline{toc}{chapter}{\listtablename}
+    \pdfbookmark[1]{\listtablename}{lot}
+    \listoftables
+        
+    \vspace*{8ex}
+%   \newpage
+    
+    %*******************************************************
+    % List of Listings
+    %*******************************************************      
+%	%\phantomsection 
+%   \refstepcounter{dummy}
+%   %\addcontentsline{toc}{chapter}{\lstlistlistingname}
+%   \pdfbookmark[1]{\lstlistlistingname}{lol}
+%   \lstlistoflistings 
+       
+    %*******************************************************
+    % Acronyms
+    %*******************************************************
+    %\phantomsection 
+    \refstepcounter{dummy}
+    \pdfbookmark[1]{Acronyms}{acronyms}
+    \chapter*{Acronyms}
+    \begin{acronym}[CSCW]
+        \acro{SPH}{Smoothed Particle Hydrodynamics}
+        \acro{SPAM}{Smooth Particle Applied Mechanics}
+        \acro{FORTRAN}{FORmula TRANslation language}
+        \acro{PDE}{Partial Differential Equation}
+        \acro{ODE}{Ordinary Differential Equation}
+    \end{acronym}                     
+\endgroup
+
+\cleardoublepage
+
+
+%********************************************************************
+% Mainmatter
+%*******************************************************
+\pagenumbering{arabic}
+\myPart{SPAC Users Guide}
+
+%\usepackage{eulervm}
+%\tableofcontents
+
+\myChapter{Getting Started}\label{ch:introduction}
+\input{getting_started}
+
+% MODEL SPECIFICATION CHAPTER
+\myChapter{Model Specification}\label{ch:specification}
+\input{Fortran_Code}
+
+\myChapter{Sample configuration file}\label{ch:config}
+\input{fsph_configuration_droplets}
+

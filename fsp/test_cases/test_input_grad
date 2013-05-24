@@ -1,0 +1,130 @@
+# SPAC Test 3 
+# Film Formation
+
+DIM 2           #    dimension of system
+NP 256           #    number of particles (must be square)
+
+DT 0.01        #    timestep size
+CUTOFF 5.0      #    cutoff radius
+TSTEPS 2000     #    number of steps to take
+SNAPFREQ 20     #	 snapshot frequency
+RUN_TYPE 1      #    Run type 
+                #      0=normal
+                #      1=load from file
+                #      2=load from file but set temp
+
+INTEGRATOR  2   #    Integration step type 
+                #      1=Improved Euler, 
+                #      2=Leapfrog (sig), 
+                #      3=runge_kutta
+
+ADAPT_DT    0   #     Adaptive timestep
+                #       0 None
+                #       1 Energy conservation
+                #       2 CFL
+
+TOLERANCE   0.00001 # Energy error tolerance (if adapt dt)
+
+NBOUNDS   0      # Number of boundary systems
+NBP_1     0      # Number of boundary particles
+NBP_2     0      # Number of boundary particles
+
+box_settings 1 
+XMAX 30.0         # 35  30      x dimension of box
+YMAX 12.0         # 35  12      y dimension of box
+
+configuration_settings 1
+SIDE  12.0      #    side of starting box10.8,21.6
+SPACING 1.0     #    spacing of particles
+START_TEMP 0.7  #    starting temperature
+
+debug_settings .f.
+
+VERBOSE .f.     #     running commentary 
+DEBUG .f.       #     insane amount of detailed output
+CONFIRM .f.     #       confirm step?
+PROFILE .f.     #Profile (timing) on/off
+VALIDATE .f.
+
+ENTROPY_TYPE 2	#	 Viscous entropy type 
+                #     1= Liu, 
+                #     2=Sigalotti ("physical viscosity")
+
+
+algorithmic_variations 1
+ART_VISC 0      #  Artificial viscosity (0=none, 1=vnr, 2=monaghan beta term)
+CONDUCTION 2    #  Conduction type (1= monaghan, 2=full heat flux)
+CORE_SIZE 0.5   #  Sigma (repulsive core size)
+REPULSION 1.0   # Repulsive coefficient (negative for repulsion)
+RESTRICT_V 1    #  Whether to restrict maximum velocity
+RHO_EQ 0        #  Density equation (0=summation, 1=continuity)
+UNSTABLE_RHO 0  #  Unstable density (0=do nothing, 1=stop, 2=set pressure to 0) 
+VELOCITY_AVG 0  #  Velocity averaging scheme (0=none, 1=monaghan(vj-vi)(mj/rhoj)wij)
+V_EPS 0.5
+COLLIDE 0       # Hard collisions, or not...
+COLLIDE_DIST  0.3 # How far till a hard collision
+
+
+Particle_input_data 1
+
+ETA 1.0             #eta - shear viscosity
+ZETA 0.1            #zeta - bulk viscosity
+SOUND_SPEED 0.0  c  #(speed of sound)
+
+
+Thermostat_input_data 1
+THERMOSTAT_TYPE 1       Thermostat type 0=none, 1=scaling, 2=absolute
+THERMOSTAT_BOUNDARY .f. Whether to thermostat boundary particles
+B_THERMOSTAT_TYPE 2  #  Thermostat type 0=none, 1=scaling, 2=absolute
+THERMOSTAT_PARTICLES .t. Whether to thermostat main particles
+THERMOSTAT_TEMP 0.9   Desired temperature
+B1_TEMPERATURE    0.5  #Optional: boundary temperature
+B2_TEMPERATURE    0.5  #Optional: boundary temperature
+
+Eos_input_data 1
+
+EOS 3       Equation of state type (
+            1=ideal gas, 
+            2=vanderwaals, 
+            3=vanderwaal seperated, 
+            4=gradient term)
+
+ADASH 2.0    adash 2
+BDASH 0.5  bdash 0.5
+KBDASH 1.0    kbdash
+CGRAD 20.0   cgrad  (for gradient term) 
+
+kernel_input_data 1
+
+KERNEL 2        Kernel type
+                1=Gaussian, 
+                2=Lucy's Quartic, 
+                3=Delrun spiky, 
+                4=spiky/lucy combo
+H 2.5        initial smoothing length
+ADAPT_H 0        Adapt smoothing length (0=none, 1=basic h=ho*(rho_o/rho)^(1/d,2=Sigalotti ADKE)
+HCO 5       cohesive smoothing length
+
+Boundary_input_data .f.
+REFLECT_XMIN  .f.       reflect at x0
+REFLECT_XMAX  .f.       reflect at xmax
+REFLECT_YMIN  .f.       reflect at y0
+REFLECT_YMAX  .f.       reflect at ymax
+BOUNDARY_CORE  -0.0
+BOUNDARY_SIGMA  0.0
+GRAVITY -0.00000  negative to attract to the zero y axis
+
+
+Box_input_data 1
+NDIM 2                   ndim (2=2 dimensional, 3=3 dimensional)
+ORIGIN 0                   box origin type (0=lower left, 1=centre)
+PBCTYPE 0           0: all directions, 1:no pbc in y direction
+
+Neighbour_list_input_data 1
+SHELL 0.5     shell
+NLTYPE 1      nlist_type (1 = all particles, 2 = cell method)
+NLREFORM 2    nlist_reform_type (1 = particle displacements, 2 = pair separations)
+MAXPN 3600    max number of neighbours per particle
+MAXDEN 30.0   max density in cell (used in cell code - usually 3.0)
+
+MAXIP 10   #  redundant

@@ -1,0 +1,32 @@
+!declare interfaces to subroutines
+interface
+   subroutine iterate(x,v,a,dxdt,dvdt,dadt,n,dim,dt)
+    integer, intent(in) :: n
+    integer, intent(in) :: dim
+    real, intent(inout), dimension(n,dim) :: x
+    real, intent(inout), dimension(n,dim) :: v
+    real, intent(inout), dimension(n,dim) :: a
+    real, intent(inout), dimension(n,dim) :: dxdt
+    real, intent(inout), dimension(n,dim) :: dvdt
+    real, intent(inout), dimension(n,dim) :: dadt
+    real :: dt
+  end subroutine iterate
+
+  subroutine initialise(x,n,dim)
+   integer, intent(in) :: n
+   integer, intent(in) :: dim
+   real, intent(inout), dimension(n,dim) :: x
+  end subroutine initialise
+
+  subroutine integrate(x,v,a,dxdt,dvdt,dadt,n,dim,dt)
+    integer, intent(in) :: n
+    integer, intent(in) :: dim
+    real, intent(inout), dimension(n,dim) :: x
+    real, intent(inout), dimension(n,dim) :: v
+    real, intent(inout), dimension(n,dim) :: a
+    real, intent(inout), dimension(n,dim) :: dxdt
+    real, intent(inout), dimension(n,dim) :: dvdt
+    real, intent(inout), dimension(n,dim) :: dadt
+    real :: dt
+  end subroutine integrate
+end interface

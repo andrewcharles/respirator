@@ -1,0 +1,78 @@
+
+\section{Building the Software}
+SPAC is easy to build on a variety of platforms using the supplied makefile. It
+has no external dependencies and is written entirely in FORTRAN 90.  SPAC has
+been tested on several flavours of Linux and Mac OS with the Gfortran, Intel
+compilers and the Portland group fortran compiler. There may be issues building
+with the IBM XLF compiler.
+
+Download the source code from the subversion server (* these details have changed *)
+
+\begin{verbatim}
+svn co http://svn.assembla.com/svn/sp_vdw
+\end{verbatim}
+
+or obtain a tar archive of the source by some other means. The tar file will
+unzip into its own directory. Unpack the tar file 
+
+\begin{verbatim}
+tar -xvf spac.tar.gz
+\end{verbatim}
+
+Check the makefile, and set compiler names and flags appropriate to your
+system. Then run make
+
+\begin{verbatim}
+make
+\end{verbatim}
+
+and the code should be ready to go. Running the executable \texttt{fsph} in the
+build directory will use the local copy of the configuration file
+\texttt{spinput.txt} and write output in ASCII format to the local directory.
+The python script \texttt{run.py} provides higher level control over program
+execution. It is highly recommended that you avail yourself of the assocated
+python based visualisation and analysis package \texttt{VSP}.
+
+\section{Running the Model}
+Several sample configuration files are included and are used as the basis for
+the automated tests.
+
+\subsection{run.py}
+\texttt{run.py} is a python program that leverages the \texttt{os} and \texttt{shutil} modules
+to manage the creation of directories, staging of output files and generation of plots for
+smooth particle runs.
+
+Create a directory in \texttt{../runs} called \texttt{inital\_run} and use the default
+config spinput.txt:
+
+\begin{verbatim}
+run.py -n inital_run
+\end{verbatim}
+
+Create a new directory called \texttt{followup\_run}, using the current version of spinput.txt
+and the final state of the previous run as the initial state:
+
+\begin{verbatim}
+run.py -c inital_run -n followup_run -a
+\end{verbatim}
+
+Use a different directory to the defaut \texttt{../runs}:
+
+\begin{verbatim}
+run.py -n new_run -b other_directory
+\end{verbatim}
+
+Run the first integrated test:
+
+\begin{verbatim}
+run.py --test 1
+\end{verbatim}
+
+Run all integrated tests:
+
+\begin{verbatim}
+testall.py
+\end{verbatim}
+
+
+

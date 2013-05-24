@@ -1,0 +1,140 @@
+========
+Pyticles
+========
+
+Andrew Charles: ac1201@gmail.com
+
+Pyticles is a set of python modules for physical modelling using particles.
+
+1. More scripted approach to execution
+2. Visualisation in real time
+3. Fast prototyping of new algoritms
+4. Integration with the fortran code
+
+The main conceptual objects are particles, neighbour lists, 
+boxes and forces.
+
+Interfaces to optimised cython modules, and wrapped fortran modules are
+also provided. For example:
+
+properties.py -- computes smooth particle properties using only python
+c_properties.py -- cython optimisation of properties.py
+f_properties.py -- calls wrapped Fortran modules
+
+The expectation would be that all three modules have the same (similar)
+interface.
+
+Dependencies
+------------
+Numpy
+Scipy (ubuntu packages for scipy and numpy are just fine)
+Cython (sudo apt-get setuptools, easy_install cython)
+
+Inspiration
+-----------
+Lepton
+Liu and Liu
+Various SIGRAPH articles
+
+For visualisation modules:
+Pyglet
+pygarrayimage (<BS>http://pypi.python.org/pypi/pygarrayimage)
+PIL
+
+Files
+=====
+
+controller.py
+-------------
+Forces, boundary conditions, anything that mutates particles is
+a subclass of controller.
+
+ParticleController
+    |------Force
+    |        |---OneBodyForce
+    |        |---NbodyForce
+    |               |--SpringForce
+    |               |--SPAMForce
+    |------Constraint
+                |-----Boundary
+
+
+forces.py
+--------- 
+A Force class instance contains a reference to at least one particle system
+and a neighbour list. But a neighbour list should contain references to
+the particles it maps. This looks like a design flaw. The force should
+operate as a one body or n body force. Given a list of particles, or
+particle pairs. A force iterates over a neighbour list.
+
+
+neighbour_list.py
+----------------- 
+Neighbour lists contain a reference to one or two particle systems.
+
+
+particles.py
+------------
+Instances of the particle class have attributes that are mostly numpy arrays.
+
+The update() method calls the numerical integrator to advance time step.
+
+config is a dictionary of configuration options.
+
+The ParticleSystem class.
+
+The SmoothParticleSystem class.
+
+
+
+About
+=====
+
+The main driver is my smooth particle research. There are a number of
+front end scripts for pyticles:
+
+spana.py
+    This is the front end for testing algorithms related to my research.
+
+ospana.py
+    This is a front end to the cython and wrapped fortran optimised version of
+    the code.
+
+bspana.py
+   Batch front end - no graphics.
+   Writes output to file.
+
+pyticles.py
+    This is where the bulk of the work on the interactive gui is going. This
+    doesn't use any SPH code at the moment - any work relevant to any particle
+    system goes here.
+
+vspana.py
+    Opens an output file and views it.
+
+
+
+
+Pyticles uses Pyglet by Alex Holkner.
+
+
+Cython Notes
+============ 
+After the success of the simple nbody Cython, I have effectively
+forked the code by writing particle_module.pyx and forces_module.pyx. At this
+stage I just want to get a feel for the amount of difference in the code and
+the amount of speed increase. Later I can think about organising it better.
+
+Having trouble with the modules using objects that reference each other.
+
+build.sh rebuilds the cython modules.
+
+
+Zoom/Pan/Rotate Notes
+=====================
+Zoom and rotation
+
+glScalef(d,d,d)
+
+
+

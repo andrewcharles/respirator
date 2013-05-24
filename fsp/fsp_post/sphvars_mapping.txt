@@ -1,0 +1,92 @@
+Input_data
+1 2  number of particles (must be square)900,2485
+2 2                   dimension of system
+3 3086370             max interacting pairs404550,3123750
+4 000               number of steps to take
+5 0.1              timestep size
+6 20     	    snapshot frequency
+7 1 0                   cutoff radius
+8 .f.             debug on/off
+9 .f.             debug level 2 on/off (verbose)
+10 .f.            confirm step?
+11 30                x dimension of box
+12 30                y dimension of box
+13 10          side of starting box10.8,21.6
+14 1.0               spacing of particles
+15 0.1                 starting temperature
+16 2		 Viscous entropy type (1= Liu, 2=Sigalotti ("physical viscosity")
+17 3        Integration step type (1=Improved Euler, 2=Leapfrog (sig), 3=runge_kutta )
+18 0       Run type (0=normal, 1=load from file, 2=load from file but set temp)
+19 0       Artificial viscosity (0=none, 1=vnr, 2=monaghan beta term)
+20 2       Conduction type (1= monaghan, 2=full heat flux)
+21 .false.     Profile (timing) on/off
+22 0.8    Sigma (repulsive core size)
+23 0.0    Repulsive coefficient (negative for repulsion)
+24 1       Whether to restrict maximum velocity
+25 0      Density equation (0=summation, 1=continuity)
+26 1      Unstable density (0=stop, 1=restrict to 1.99)
+
+Particle_input_data
+0.0  eta - shear viscosity
+0.0  zeta - bulk viscosity
+0.0  c (speed of sound) temporariyl gradient term
+
+Thermostat_input_data
+1       Thermostat type 0=none, 1=scaling
+0.8     Desired temperature
+
+Eos_input_data
+3    Equation of state type (1=ideal gas, 2=vanderwaals, 3=vanderwaal seperated, 4=gradient term)
+2    adash
+0.5  bdash
+1    kbdash
+0.0   cgrad  (for gradient term) 
+
+kernel_input_data
+2        Kernel type          (1=Gaussian, 2=Lucy's Quartic, 3=Delrun spiky, 4=spiky/lucy combo)
+2        initial smoothing length
+0        Adapt smoothing length (0=none, 1=basic h=ho*(rho_o/rho)^(1/d)
+2       cohesive smoothing length
+
+Box_input_data
+2                   ndim (2=2 dimensional, 3=3 dimensional)
+0                   box origin type (0=lower left, 1=centre)
+0
+0
+0
+
+Boundary_input_data
+.f.       reflect at x0
+.f.       reflect at xmax
+.f.       reflect at y0
+.f.       reflect at ymax
+
+Neighbour_list_input_data_a-a
+5.0                shell
+1                   nlist_type (1 = all particles, 2 = cell method)
+2                   nlist_reform_type (1 = particle displacements, 2 = pair separations)
+2500                 max number of neighbours per particle
+1.0                 max density in cell (used in cell code - usually 3.0)
+
+g_r_input_data
+1          kg
+100         ng
+10.00       rmax
+
+Properties_input_data_transient
+10                  (not used for transient)
+2                   ktseries (property accumulations between tseries writes)
+1                   (not used for transient)
+
+Sllod_input_data
+0                   flow type (0=eq, 1=shear, 2=pef, 3=bulk)
+-0.00100            strain rate
+-0.5                strain shift (PEF and PSF only: usually either 0.0 or -0.5(cell code))
+
+
+
+Sllod_input_data_transient
+0                   flow type (0=eq, 1=shear, 2=pef, 3=bulk)
+1.0                 strain rate
+-0.5                strain shift (PEF and PSF only: usually either 0.0 or -0.5(cell code))
+

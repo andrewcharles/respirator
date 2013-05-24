@@ -1,0 +1,183 @@
+RSPerator
+
+RMIT Smooth Particle Code v.1 - SPH/SPAM Material Simulator for CPU
+Copyright (C) 2011.
+Written by Andrew Charles 
+under the guidance of Prof. Peter  Daivis.
+RMIT University
+
+http://
+
+
+----------------
+Lightning Start
+----------------
+> source phd.sh
+> rsprun.py <config_selection> <output_name>
+> reportgen.py <config_selection> <model_selection>
+
+
+-----------------
+Package Overview
+-----------------
+
+This software consists of the following main sections:
+
+config_lib: Configuration library for pyticles
+doc: Manually built (Sphinx) documentation.
+data: Output directory for simulation data
+exp: scripts for generating sets of experiments, and for copying data between machines.
+html: Auto generated documentation for python modules (Present?)
+fsp: Fortran smooth particle code
+pyticles: Python run control code for 3D systems
+splib: Python smooth particle library
+vdwlib: Library of routines and constants for van der Waals' equation of state.
+vsp: Visualisation and analysis
+
+
+-----------------
+Package Details
+-----------------
+
+Use build.sh to attempt to build all packages. Expect some
+configuration will be required so that all required compilers
+and libraries can be found on your system.
+
+
+config_lib: Configuration library for pyticles.
+
+	- Groups of experiments ranging in size from tiny to expensive.
+	- Virtually all relate to PhD investigation into condensation modelling.
+	
+
+doc: Manually built (Sphinx) documentation.
+
+	- Some automation of the build of Python documentation.
+	- Notes on building some of the more troublesome dependencies.
+
+
+data: Output directory for simulation data
+
+	- Not populated in the repository.
+	- Most sub-packages expect to find data in this location
+	- Location can be changed in phd.sh
+	
+
+exp: scripts for generating sets of experiments, and for copying data between machines.
+
+	- Customised shell and Python scripts.
+	- Will be of use in determining how to do basic things.
+	- Machine-specific.
+	
+
+html: Auto generated documentation for python modules
+
+	- Generated using docmake.sh
+	
+
+fsp: Fortran smooth particle code
+
+    - Stand alone.
+    - Includes 2D run and visualisation system (fsp_post)
+    - Includes library routines for 3D simulations
+    - Supports custom formatted ASCII input/output
+	
+	See fsp/README_fsp.txt for more detail.
+
+
+pyticles: Python run control code for 3D particle systems
+
+    - With realtime visualisation using OpenGL(experimental)
+	- Output to netCDF structured format
+	- Highly configurable, suitable for short and very long calculations
+	- Depends on splib, fsp, vdwlib
+	
+	See pyticles/README for more detail
+	
+	
+splib: Python smooth particle library
+
+	- Low level smooth particle interpolation calculations for
+		modelling and visualisation.
+	- Primarily implemented in Cython.
+
+
+vdwlib: Library of routines and constants for van der Waals' equation of state.
+	
+	See vdwlib/README_vdwlib for more details.
+	
+
+vsp: Visualisation and analysis for smooth particles.
+
+    Report based visualisation and plotting, along with simple
+    calculations.
+	Depends on fsp (python modules), vdwlib, splib, pyticles.
+	
+	See README_vsp for more details.
+	
+
+worklog: An incomplete record of work and changes.
+
+
+
+-----------
+Quick Start
+-----------
+At the command line execute 
+
+> source phd.sh
+
+or the equivalent in your shell. Take a look at this file to make sure
+directories are appropriate to your system. Then execute
+
+> rsprun.py <config_selection> <output_name>
+
+Where config_selection is the name of the configuration from
+config_library.py that you wish to load, and output_name is the name of
+the output file.
+
+To save your work, always use a different output name. To overwrite old
+work, simply use the same name as the config. This is the default
+behaviour if only a configuration is given. Add new configurations to
+config_library.py by extending existing ones and overriding the
+parameters you wish to change.
+
+
+-------------------
+System requirements
+-------------------
+
+Fortran compiler
+
+    For example gcc's gfortran
+
+    Older unices may not support some of the newer fortran 90 features
+    required for this code. Steps to build gcc are in doc/build_gcc.txt
+    but this is only expected to be required on old version of Linux.
+
+C compiler
+
+Python
+    numpy
+
+Pyticles
+    Cython
+
+VSP requirements
+    scipy
+
+
+python-netcdf4
+netCDF4 (to provide the tools like ncdump required
+to view the netcdf output data.)
+
+
+astropy now required?
+
+pyglet is required for some vsp modules and also the pyticles viewer.
+pygarrayimage
+PIL
+
+
+Mayavi is used for some 3D visualisation scripts. See doc/build_mayavi.txt
+

@@ -1,0 +1,30 @@
+﻿state snapshot files
+
+! column 1 - x position
+! column 2 - y position 
+! column 3 - x velocity
+! column 4 - y velocity
+! column 5 - x acceleration
+! column 6 - y aceleration
+! column 7 - temperature
+! column 8 - internal energy
+! column 9 - mass
+! column 10 - density
+! column 11 - pressure
+! column 12 - speed of sound
+! column 13 - viscosity
+! column 14 - smoothing length
+! column 15 - heat flux vector, x direction
+! column 16 - heat flux vector, y direction
+! column 17 - smoothed velocity, x
+! column 18 - smoothed velocity, y
+! column 19 - smoothed pressure
+! column 20 - smoothed temperature
+! column 21 - density gradient x
+! column 22 - density gradient y
+
+Properties file
+1 - total kinetic energy in the system
+2 - total internal energy in the system
+3 - mean temperature
+4 - mean density

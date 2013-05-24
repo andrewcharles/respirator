@@ -1,0 +1,1461 @@
+This chapter details the model in its entirety. Program variables are denoted
+in \texttt{thusly}. Code is referred to as a reference.
+
+% SYSTEM STATE SECTION
+% --------------------
+
+\section{System state}
+A smooth particle system is completely specified by a set of $N$ interpolation
+points, dubbed particles, where each $i$th point has position $r_{i}$, velocity
+$v_{i}$, mass $m_{i}$, thermal temperature $T_{i}$, density $\rho_{i}$,
+acceleration $a_{i}$ and other properties detailed below. For an introduction
+to smooth particle methods see \cite[]{hoover_smooth_2006} and
+\cite[]{liu_smoothed_2003}
+
+\section{Smoothed properties} Any extensive or field property is computed at a
+arbitrary point in space via the smoothed particle interpolation
+\begin{equation}
+\label{particleapprox}
+\mathbold{f} \left( \mathbold{r} \right)  = \sum^{N}_{i=1} m_{i}
+\frac{\mathbold{f}_{i}}{\rho_{i}}W_{ij}, 
+\end{equation}
+
+where  $W_{ij}$ is a normalised smoothing kernel usually of Gaussian shape and
+finite extent given as
+\begin{equation}
+\label{kernel_shorthand}
+ W_{ij}=W(| \mathbold{r}_{j}-\mathbold{r}_{i} |,h),
+\end{equation}
+
+where $h$ is a smoothing length associated with the range of the kernel.
+In the normal running of the program there is no cause to compute values in
+between interpolation points, this step is usually reserved for visualisation
+and analysis.
+
+% SMOOTHING KERNELS SUBSECTION
+% ----------------------------
+
+\subsection{Smoothing Kernels}
+A number of kernels are implemented, all of which are radially symmetric, have
+the delta function property 
+
+\[ \lim_{h\rightarrow0} W(\mathbold{r},h) = \delta(\mathbold{r}) \] 
+
+and are normalised with 
+
+\[ \int W\left(\mathbold{r},h\right) d\mathbold{r} = 1  \]
+
+Here $\delta$ is the Dirac delta function defined by
+
+\[ \int_{-\inf}^{+\inf} f(x) \delta(x) dx = f(0) \].
+
+The Gaussian kernel $W_{g}$ has the advantage of being continuously
+differentiable and stable \cite{morris} but the disadvantage that it is not
+finite in extent.
+
+\begin{equation}
+\label{gaussian_kernel}
+W_{g} \left( \mathbold{r} \right)=\frac{1}{ h^{d}\pi^{\frac{d}{2}}} 
+\exp \left\{  \frac{-r}{h^{2}}  \right\}
+\end{equation}
+
+% The derivative of the gaussian kernel (in one dimension) is
+% \frac{dW(r)}{dr_\alpha} = \frac{-2r}{h^{2}}W(r)
+
+To reproduce the results of Nugent and Posch, Melean and Sigalotti and Hoover
+\cite{nugent_liquid_2000} \cite{melean_coalescence_2005},
+\cite{hoover_entropy_1999}, Lucy's quartic spline kernel $W_{lucy}$ is
+implemented. Lucy's kernel is computationally cheap and finite in extent being
+zero for $r > h$, and is given in two dimensions by
+
+\begin{equation}
+\label{lucy_kernel}
+W_{lucy} = \frac{5}{\Pi h^2}\left(1 + 3\frac{r}{h}\right)\left(1 - 3\frac{r}{h}\right)^3
+\end{equation}
+
+% expanded
+% W = \frac{5}{\Pi h^2} ( \frac{-3r^4}{h^4} + \frac{8r^3}{h^3} -
+% \frac{6r^2}{h^2} +1) 
+
+$r$ is the distance from the center of the kernel. The derivative of $W_{lucy}$
+is
+
+\begin{equation}
+\label{lucy_kernel_derivative}
+\frac{\partial W}{\partial r} = \frac{5}{\Pi h^2} \left( - \frac{12r^3}{h^4} +
+\frac{24r^2}{h^3} - \frac{12r}{h^2} \right)
+\end{equation}
+
+When plotting this function, remember that r is always positive, or the results
+will confuse.
+
+% SPATIAL DERIVATIVES SECTION
+% ---------------------------
+
+\subsection{Spatial Derivatives}
+
+Spatial derivatives of field properties are given by
+\begin{equation}
+\nabla \cdot \mathbold{f}(\mathbold{r}) = \sum^N_{j=1} \frac{m_j}{\rho_j}
+\mathbold{f}(\mathbold{r}_{j}) \cdot \nabla_i W_{ij}
+\end{equation}
+
+With the distance between two particles $r_{ij} = | \mathbold{r_{j}} -
+\mathbold{r_{i}} | $ ,the kernel gradient between two particles is given as 
+
+\begin{equation}
+\label{kernel_gradient}
+\nabla_{i} W_{ij}  =  \frac{ \mathbf{r}_{i} - \mathbf{r}_{j} }{r_{ij}}
+\frac{ \partial W_{ij}}{ \partial r_{ij}}
+\end{equation}
+
+This amounts to taking the position of particle $i$ as the reference or origin.
+The same convention is used by Hoover and others in the field.
+
+% PARTICLE PROPERTIES SECTION
+% ---------------------------
+
+\section{Particle properties}
+Particles possess a range mechanical and thermodynamic properties. This section
+provides information about particles' properties, what they are represented as
+in code, and how they are computed.
+
+% PARTICLE MECHANICAL PROPERTIES
+% ------------------------------
+\subsection{Basic Mechanical Properties}
+All smooth particle models make use of these basic mechanical properties.
+Particles are moved with the particle velocity, unless the velocity smoothing
+algorithm detailed below is used in which case they are moved with a smoothed
+velocity obtained by applying a smooth particle summation to the particle
+velocities. 
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+\spacedlowsmallcaps{Variable} 
+& \spacedlowsmallcaps{Fortran name} 
+& \spacedlowsmallcaps{Description} \\
+$r_{i}$     & \texttt{x(i)}        & position \\
+$v_{i}$    & \texttt{v(i)}          & velocity \\
+$m_{i}$   & \texttt{m(i)}          & mass \\
+\end{tabularx}
+
+\subsection{Mechanical transport properties}
+Transport properties are used in the constitutive relations when computing the 
+pressure tensor. In principle they can be functions of the density or other 
+variables, in practice they are usually held constant however the implementation 
+allows them to vary by particle.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\eta_i$ & \texttt{eta} &  Shear viscosity \\
+$\eta_{vi}$ & \texttt{zeta} & Bulk viscosity \\
+$C_i$ & \texttt{cgrad} & The density gradient coefficient \\
+$c_i$ & \texttt{c} & Speed of sound \\
+& & \\
+\end{tabularx}
+
+\subsection{Derived mechanical properties}
+Various mechanical properties are computed using smoothed particle
+approximations over neighbouring particles.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\rho(\mathbold{r}) $       & \texttt{rho} & Density, \\
+$\rho_{lr}(\mathbold{r}) $  & \texttt{rho\_lr} & Density computed with long range smoothing. \\
+$p$                  & \texttt{p} & pressure \\
+$p_{co}$         & \texttt{p\_co} & cohesive pressure  \\
+$\nabla \rho$ & \texttt{grad\_rho} & density gradient  \\
+$\nabla^{2} \rho$ & \texttt{gradgradrho} & density gradient divergence \\
+$| \nabla \rho |^{2} $ & \texttt{maggradrhosq} & squared magnitude of density gradient\\
+$\nabla v$      & \texttt{grad\_v}         & velocity gradient \\
+$\nabla \cdot v$      & \texttt{div\_v}         & velocity divergence\\
+\end{tabularx}
+
+% Density
+\paragraph{}
+The summation density approach is used to calculate the density at any point in
+the fluid, using equation \ref{kernel_shorthand}.
+
+\begin{equation}
+\label{density_summation}
+\rho(\textbf{r})=\sum_{j=1}^{N}m_{j} 
+W\left( \left|\mathbf{r} - \mathbf{r}_{j} \right|,h\right)
+\end{equation}
+
+The density assigned to particle $i$ is $\rho_{i} = \rho(\mathbold{r})$. A long
+range density is also computed for use in expressions involving the long range
+force and smoothing length.
+
+\begin{equation}
+\label{density_summation_longrange}
+\rho_{l}(\textbf{r})=\sum_{j=1}^{N}m_j W(H)_{ij}
+\end{equation}
+
+% Density Gradient
+\paragraph{}
+The density gradient is computed using the kernel gradient (equation
+\ref{kernel_gradient} ) 
+
+\begin{equation}
+\label{density_gradient}
+\nabla \rho (\mathbold{r}) = \sum^{N}_{j=1} m_j \nabla_{i} W_{ij} 
+\end{equation}
+
+% Gradgradrho
+\paragraph{}
+The laplacian of the density is given by ...
+\begin{equation}
+\label{density_laplacian}
+\nabla \rho (\mathbold{r}) = - \sum^{N}_{j=1} m_j \nabla_{j} W_{ij} 
+\end{equation}
+
+% maggradrhosq
+\paragraph{}
+with magnitude ...
+
+% Velocity Gradient
+\paragraph{}
+The velocity gradient is needed for viscosity calculations. NB this is
+different in code (still?)y - check what Hoover uses, he has a nice argument as to why
+one expression is better than the other for spatial gradients.
+
+\begin{equation}
+\label{grad_v}
+\nabla \mathbold{v}_{i} = \frac{1}{\rho_i}\sum_{j=1} m_j(\mathbold{v}_j 
+- \mathbold{v}_i)\nabla_{i} W_{ij}
+\end{equation}
+
+% Velocity Divergence
+\paragraph{}
+The velocity divergence also appears in most viscous constitutive relations
+
+\begin{equation}
+\label{div_v}
+\nabla \cdot \mathbold{v}_{i} = \frac{1}{\rho_{i}} \sum_{j=1} m_{j} 
+\left(\mathbold{v_{j}} - \mathbold{v_{i}}\right) \cdot \nabla W_{ij}
+\end{equation}
+
+% Pressures
+\paragraph{}
+The isotropic pressure $p$ is given by the equation of state which usually
+takes the form
+
+\begin{equation}
+p = p \left( \rho, T \right).
+\end{equation}
+
+SPAC allows for cohesive and repulsive (long and short range) components of the
+pressure to be treated separately, and indeed this appears to be required in
+order to obtain well behaved liquid vapour coexistence with SPAM.
+
+% PARTICLE THERMAL PROPERTIES
+% ---------------------------
+\subsection{Thermal properties}
+The internal energy and thermal temperature of a particle are related through
+the caloric equation of state (ref). In the program when one is changed the
+other is updated. As the smooth particles do not represent molecules, the
+system temperature is not related to the particle velocities.  
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+\multicolumn{3}{l}{\spacedlowsmallcaps{Thermal properties}} \\
+$u_{i}$ & \texttt{u} & Internal energy per unit mass \\
+$t_{i}$  & \texttt{temp} & Temperature \\
+& & \\
+\end{tabularx}
+
+\subsection{Derived thermal properties}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\mathbold{J_{q}}$ & \texttt{q} & Heat flux \\
+$\nabla T$ & none & Temperature gradient \\
+&&\\
+\end{tabularx}
+
+\paragraph{}
+The heat flux is needed for the energy equation, computed using the temperature
+gradient, and is given by
+
+\begin{eqnarray}
+\label{heat_flux_constitutive}
+\mathbold{J_{qi}} &=& - \lambda \nabla T_{i} \\
+& = & -\lambda \left( \sum_{j}  \frac{m_{ij}} {\rho_{ij}} \left(T_{j} 
+- T_{i} \right) \nabla_{i}W_{ij} \right) \\
+\end{eqnarray}
+
+The code is simplified by noting that the contribution to the heat flux of
+particle $i$ from particle $j$, $\mathbold{J}_{ij}$ is equal to
+$\mathbold{J_{ji}}$, because $T_{ij} = - T_{ji}$ and 
+$\nabla_{i}W_{ij} = -\nabla_{j}W_{ji}$
+
+% PRESSURE TENSOR COMPONENTS
+% --------------------------
+\subsection{Components of the pressure tensor}
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\mathbold{P}$ & none & total pressure tensor \\
+$\mathbold{\Pi}_{os}$   & \texttt{pi\_os} & Symmetric traceless viscous (irreversible) pressure tensor, \\
+$\Pi \mathbold{1}$   & \texttt{} &  the isotropic viscous (irreversible) pressure tensor, \\
+$\mathbold{\Pi}$   & \texttt{pi\_irr} &  total irreversible pressure tensor, \\
+$\mathbold{P_{r}} $ & \texttt{p\_rev} & the reversible, non-isotropic pressure tensor  \\
+$\mathbold{P_{L}}$  & \texttt{p\_rev\_lr} & the long range reversible, non-isotropic pressure tensor  \\
+$\mathbold{C} $ & accum in \texttt{p\_rev\_lr} & capillary (density gradient) pressure \\
+$p$ & \texttt{p\_eq} & isotropic part of the equilibrium pressure. \\
+&&\\
+\end{tabularx}
+
+% NUMERICAL PROPERTIES
+% --------------------
+\subsection{Numerical properties}
+Each particle has its own smoothing length, in order to support adaptive
+smoothing lengths in which the smoothing length associated with each particle
+changes over time, usually dependent on density
+\cite[]{sigalotti_shock-capturing_2006}.
+Other algorithmic variations require their own special quantities to be
+computed.  In particular so called 'Monaghan velocity smoothing' uses a
+partially smoothed interpolant of the velocity to move particles, instead of
+the particle velocity computed from the momentum equation. The leapfrog
+integrator requires the half-step position to be propagated to the next
+integration step.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$h$ & \texttt{sml} & Smoothing length \\
+$H$ & \texttt{sml\_long} & long smoothing length \\
+$x_{t+\frac{1}{2}}$& \texttt{xhalf } &  Leapfrog half-step position \\
+$\dot{\mathbold{r}_{i}}$ & \texttt{rdot } & Monaghan smoothed velocity\\
+$\epsilon_{v}$ & \texttt{eps}        & monaghan velocity smoothing fraction\\
+\end{tabularx}
+
+\paragraph{}
+A smoothed velocity for moving particles is computed using Monaghan velocity
+smoothing. This velocity is not the same as the smoothed field velocity at the
+particle location.  This velocity smoothing assists in controlling tensile
+instability, by decreasing the velocity of approaching particles while
+conserving linear momentum. Hoover points out the conservation of angular
+momentum using velocity smoothing is not yet well understood.
+\cite[]{hoover_smooth-particle_2004} \cite[]{monaghan_smoothed_1992}
+
+\begin{equation}
+\dot{\mathbold{r}_{i}} = \mathbold{v_{i}} + \epsilon_{v} 
+\sum_{j} \frac{m_{j}}{\rho_{j}} \left( \mathbold{v_{j} - v_{i}} \right) W_{ij}
+\end{equation}
+
+The velocity computed using the momentum equation (ref) is not in general equal to the 
+smoothed velocity at the particle's position.
+
+\subsection{Smoothed mechanical properties}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\mathbold{v(r)}$ & \texttt{v\_flow } & SPH smoothed value of velocity at a point \\
+$\mathbold{p(r)}$& \texttt{p\_smooth} & SPH smoothed pressure\\
+\end{tabularx}
+
+\subsection{Smoothed thermal properties}
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+& \texttt{t\_smooth } &  \\
+\end{tabularx}
+
+% DYNAMICAL PROPERTIES
+% --------------------
+\subsection{Dynamical properties}
+New velocites, positions and energies are computed each step using the time
+rates of change of these quantities.  Details of the computation are given in
+section 3.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\frac{ dv}{dt}$ & \texttt{a} &  acceleration  \\
+$\frac{ du}{dt} $& \texttt{dedt} & time rate of change of internal energy. \\
+\end{tabularx}
+
+% NEIGHBOURLY PROPERTIES 
+% ----------------------
+\section{Neighbourly Properties}
+Some variables are calculated for each pair of particles. Most are members of
+a neighbour list structure, denoted in the table as \texttt{nl}
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$W_{ij}$ & \texttt{nl\%w}  & Kernel \\
+$\nabla_{i}W_{ij}   $ & \texttt{nl\%w} & Pairwise kernel gradient \\
+$ \mathbold{v}_{ij} $ & \texttt{nl\%dv}         & pair velocity difference \\
+$ r_{ij}            $ & \texttt{nl\%rij}        & pair distance \\
+$ \left(r_{ij}\right)^{2} $ & \texttt{nl\%rijsq}      & squared pair distance \\
+$ W_{Lij}         $ & \texttt{nl\%w\_long}    & normal range kernel \\
+$\mathbold{r}_{ij}  $ & \texttt{nl\%drij} & pair displacement \\
+$\nabla_{i}W_{Lij} $ & \texttt{nl\%dwdx\_long} & Long range kernel gradient \\
+\end{tabularx}
+
+% SYSTEM CONSTANTS
+% ----------------
+\section{System Properties}
+Some constants and parameters are set system-wide.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\sigma $ & \texttt{sigma} & core size \\
+$c_{r} $     & \texttt{rcoef}   & repulsion strength \\
+$\lambda$       &  \texttt{thermalk} & heat conduction coefficient \\
+\end{tabularx}
+
+% Non-persistent properties
+% -------------------------
+\section{Force Subroutine Variables}
+These variables are not persisted in data structures, but are used to compute
+the total rates of change.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$\mathbold{F}_{ci} $& \texttt{repulsion} & Core force\\
+$\mathbold{\Pi}_{VNRi}$ & \texttt{avisc} & Artifical Viscosity\\
+$\mathbold{F}_{gi}$ & \texttt{avisc} & Body force\\
+\end{tabularx}
+
+% SYSTEM ENERGIES
+% ---------------
+\subsection{System Energies}
+Several system energy quantities are tracked in order to monitor energy conservation.
+
+\paragraph{}
+\begin{tabularx}{\textwidth}{lll} \toprule
+$V$& \texttt{ep} & Total system potential energy\\
+$T$& \texttt{ek} & Total system kinetic energy\\
+$V-U_{e}$& \texttt{ep\_iso} & Total potential energy minus thermostat contribution\\
+$ $& \texttt{isoham} & Total energy minus thermostat energy\\
+$U_{e}$ & \texttt{u\_env} & Thermostat energy (positive for energy added to the system)\\
+\end{tabularx}
+
+\paragraph{}
+The total system internal energy is computed by a sum over $u$ (internal energy
+per unit mass) in the subroutine \texttt{system\_internal\_energy}.
+
+\begin{equation}
+V = \sum \frac{u_{i}}{m_{i}}
+\label{system_internal_energy}
+\end{equation}
+
+Total system kinetic energy is simply
+
+\begin{equation}
+T = \sum  m_{i} v_{i}^{2}
+\label{system_kinetic_energy}
+\end{equation}
+
+computed over all particles and ,if they are allowed to move, boundary
+particles in the  subroutine\texttt{system\_kinetic\_energy}.
+
+Isolated internal energy is the internal energy of the system minus the energy
+added by the thermostat. This is used in combination with the kinetic energy to
+produce an 'isolated hamiltonian' to account for energy conservation in the
+subroutine \texttt{system\_isolated\_internal\_energy}.
+
+% DYNAMICS
+% --------
+
+\subsection{Dynamics - the Momentum Equation}
+A symmetrised form of the momentum equation is used to compute the time
+derivative of particle velocities $v$, based on the common smoothed particle
+momentum equation.
+
+\begin{equation}
+\label{sph_momentum}
+\frac{d \mathbold{ v_{i}} }{dt} = - \sum^{N}_{j=1}  
+m_j \left( \frac{\mathbold{P_{i}}}{\rho^{2}_{i}} 
++ \frac{\mathbold{ P_{j}} }{\rho^{2}_{i}} \right) \cdot \nabla_i W{ij} 
++ \frac{\mathbold{F_{ci}}}{m_{i}} + \frac{\mathbold{F_{g}}}{m_{i}}
+\end{equation}
+
+Where a longer ranged kernel is used for part of the force it is used to
+compute all smoothed properties that go into computing that force.
+
+\begin{eqnarray}
+\label{sph_momentum_seperated}
+\frac{d \mathbold{v}_{i} }{dt} &=& - \sum^{N}_{j=1}  
+m_j \left( \frac{\mathbold{P}_{ri}}{\rho^{2}_{i}} 
++ \frac{\mathbold{P}_{rj} }{\rho^{2}_{j}} \right) \cdot \nabla_i W{ij}  \\
+&-& \sum^{N}_{j=1}  m_j \left( \frac{\mathbold{P}_{Li}}{\rho^{2}_{i}} 
++ \frac{\mathbold{P}_{Lj}}{\rho^{2}_{j}} \right) \cdot \nabla_i W_{Lij}  \\
+&+& \frac{\mathbold{F}_{ci}}{m_{i}} \\
+&+& \frac{\mathbold{F}_{gi}}{m_{i}}
+\end{eqnarray}
+
+In code the variable h is used to accumulate the bracketed quantity.
+\[
+h  = \left( \frac{\mathbold{P}_{rj}}{\rho^{2}_{i}} 
+   + \frac{\mathbold{P}_{ri} }{\rho^{2}_{j}} \right) \cdot \nabla_i W_{ij} 
+\]
+
+So
+
+\[
+h_{xx} = \left( \frac{P_{rixx}}{\rho^{2}_{i}} 
+   + \frac{\mathbold{P}_{rjxx} }{\rho^{2}_{j}} \right) \nabla_{i} W_{ijx} 
+\]   
+   
+\[
+h_{xy} = \left( \frac{P_{rixy}}{\rho^{2}_{i}} 
+   + \frac{\mathbold{P}_{rjxy} }{\rho^{2}_{j}} \right) \nabla_{i} W{ijy}   
+\]
+
+\[
+h_{yx} = \left( \frac{P_{riyx}}{\rho^{2}_{i}} 
+   + \frac{P_{rjyx} }{\rho^{2}_{j}} \right) \nabla_i W_{ijx} 
+\]
+
+\[
+h_{yy} = \left( \frac{P_{riyy}}{\rho^{2}_{i}} 
+   + \frac{P_{rjyy} }{\rho^{2}_{j}} \right) \nabla_i W_{ijy} 
+\]
+
+
+\subsection{Dynamics - the Energy Equation}
+% ENERGY EQUATION
+The energy of an sph element can change via pressure-volume work, viscous
+heating or conduction.  SPAC uses a commonly used form of the energy equation. 
+The sign is different to that in some papers because we have used vj - vi throughout.
+
+\begin{equation}
+\label{energy_equation}
+\frac{du_{i}}{dt} = - \frac{1}{2} \sum^{N}_{j=1} m_j \left( \frac{\mathbold{P}_{i}}
+{\rho_{i}^{2}} + \frac{\mathbold{P}_{j}}{\rho_{j}^{2}}\right) : \mathbold{v}_{ij} 
+\nabla_{i} W_{ij} - \sum^{N}_{j=1} m_{j} \left( \frac{\mathbold{J}_{qi}}{\rho_{i}^{2}} 
++ \frac{\mathbold{J}_{qj} }{\rho_{j}^{2}} \right) \cdot \nabla_{i} W_{ij}
+\end{equation}
+
+The h defined above is used to accumulate the PV contribution to the work.
+
+Let 
+
+\[
+K = \frac{\mathbold{P}_{rj}}{\rho^{2}_{i}} 
+   + \frac{\mathbold{P}_{ri} }{\rho^{2}_{j}}
+\]
+
+\[
+\mathbf{v}_{ij} \nabla W = 
+\begin{array}{ccc}
+	v_{ijx} \nabla W_{x} & v_{ijx} \nabla W_{y} \\
+	v_{ijy} \nabla W_{x} & v_{ijy} \nabla W_{y} \\
+\end{array}
+\]
+
+Because in the double contraction we sum opposite indices we have
+
+\[ \mathbf{K} : \mathbf{v}_{ij} \nabla W
+= \sum_{a} \sum_{b} K_{ab} \left( v_{ij}  \nabla W_{x} \right)_{ba} \]
+
+\[ \mathbf{K} : \mathbf{v}_{ij} \nabla W 
+= K_{xx} v_{ijx} \nabla W_{x} 
++ K_{xy} v_{ijy} \nabla W_{x}
++ K_{yx} v_{ijx} \nabla W_{y}
++ K_{yy} v_{ijy} \nabla W_{y}  \]
+
+\[ \mathbf{K} : \mathbf{v}_{ij} \nabla W 
+= H_{xx} v_{ijx} 
++ K_{xy} v_{ijy} \nabla W_{x}
++ K_{yx} v_{ijx} \nabla W_{y}
++ H_{yy} v_{ijy} \]
+
+Not sure about the other two terms - if H is symmetric
+it's the same but if not it looks like you can't sub it in.
+
+
+\begin{eqnarray}
+\label{energy_equation_2}
+\frac{du_{i}}{dt} &=& - \frac{1}{2} \sum^{N}_{j=1} m_j 
+\left( \frac{\mathbold{(P_{rev})_{i}}}{\rho_{i}^{2}} 
++ \frac{\mathbold{(P_{rev})_{j}} }{\rho_{j}^{2}}\right) 
+: \mathbold{v}_{ij} \nabla_{i} W_{ij} \\
+&+& - \frac{1}{2} \sum^{N}_{j=1} m_j \left( \frac{\mathbold{\Pi_{i}}}{\rho_{i}^{2}} 
++ \frac{\mathbold{\Pi_{j}} }{\rho_{j}^{2}}\right) : \mathbold{v}_{ij} \nabla_{i} W_{ij} \\
+&-& \sum^{N}_{j=1} m_{j} \left( \frac{\mathbold{J_{qi}}}{\rho_{i}^{2}} 
++ \frac{\mathbold{J_{qj}} }{\rho_{j}^{2}} \right) \cdot \nabla_{i} W_{ij}
+\end{eqnarray}
+
+\graffito{Which term is artificial viscosity added to for the purposes of heating?}
+
+%\frac{de_{i}}{dt} = \frac{1}{2} \sum^{N}_{j=1} m_b \frac{ \mathbold{P_{i}} }{\ rho_{i}^2} + \frac{ \mathbold{P}_j }
+%{\rho_{b}^{2} } : \mathbold{v_b - v_a}  \frac{\de W_{ij}}{ \delta \mathbold{x_j}^i}
+%\begin{equation}
+%\label{energy_equation_pvterm2}
+%\frac{de_a^{pressure}}{dt} = \frac{1}{2} \sum^{N}_{b=1} m_b \frac{p_a}{\rho_a^2} + \frac{p_b}{\rho_b^2}\textbf{v}_ab^i
+%                 \frac{\delta W_ab}{\delta \textbf{x}_a^i}
+%\end{equation}
+
+%The pv work term is
+%\begin{equation}
+%\label{energy_equation_pvterm2}
+%\frac{de_a^{pressure}}{dt} = \frac{1}{2} \sum^{N}_{b=1} m_b \frac{p_a}{\rho_a^2} + \frac{p_b}{\rho_b^2}\textbf{v}_ab^i
+%                  \frac{\delta W_ab}{\delta \textbf{x}_a^i}
+%\end{equation}
+
+
+% CONSTITUTIVE RELATIONS
+% ----------------------
+
+% CONSTITUTIVE RELATIONS FOR PRESSURE
+% -----------------------------------
+\section{The Pressure Tensor}
+The presure tensor $P$ is a second rank tensor which ... description ...
+\graffito{(Check what form of words Rutherford Aris uses).}
+
+We use the pressure tensor to hold all the information about the forces acting
+at each point. In the code, the pressure tensor is separated into components to
+allow different constitutive relations to be mixed and matched. The isotropic
+equilibrium pressure $p$, the density gradient contribution to the reversible
+pressure $C$, the non-equilibrium irreversible viscous stress
+$\mathbf{\Pi^{os}}$ and the isotropic bulk viscous stress
+$\mathbf{\Pi\mathbold{1}}$. The isotropic pressure is further seperated into
+short range repulsive and long range attractive components.
+
+\begin{equation}
+\label{pressure_tensor}
+\mathbold{P} = p\mathbold{1} + \mathbold{C} +  \mathbold{\Pi}^{os} 
++ \Pi \mathbold{1}  + \mathbold{\Pi}_{VNR}
+\end{equation}
+
+\subsection{Constitutive relations for isotropic pressure}
+The code provides a number of constitutive relations (equations of state) for
+the reversible part of the pressure.  Mechanical equations of state are
+implemented for an ideal gas, a quasi-incompressible fluid, a van der Waals
+fluid, a van der Waals fluid with attractive and repulsive components treated
+seperately.
+
+\begin{equation}
+\label{eos}
+p = p \left( \rho, T \right)
+\end{equation}
+
+% Untested
+%\paragraph{Ideal Gas}
+%\begin{equation}
+%p=R\frac{e}{c_v}\rho
+%\end{equation}
+
+%\subsubsection{Water}
+%\begin{equation}
+%p=c\rho
+%\end{equation}
+
+The well known van der Waals equation of state is
+
+\begin{equation}
+\label{vdw_eos}
+p = \frac{\rho k_b t}{1-\rho b} - a \rho^2
+\end{equation}.
+
+% The current version of the code has two gradient term implementations, 
+% the first is calculated with the pressure tensor, the second in the equation of state.
+
+We Separate the van der Waals equation of state into short ranged repulsive and
+long ranged attractive contributions after \cite{nugent_liquid_2000}.
+
+\begin{eqnarray}
+\label{vdw_eos_sep}
+p & = & p_{r}  + p_{co}  \\
+  & = & \left( \frac{\rho_{s} k_{b} t}{1-\rho_{st} b} \right) 
+  + \left(- a \rho_{L}^{2} \right) 
+\end{eqnarray}
+
+The long range smoothing length is used for all properties used to compute the
+long-range pressure. SPAC's implementation is different in this way from other
+work using the longer smoothing length.
+
+% other references: hoover
+
+\begin{equation}
+\label{vdw_repulsive}
+p_{r} = \frac{\rho\left(\mathbold{r},h\right) k_b t}{1-\rho\left(\mathbold{r},h\right) b} 
+\end{equation}
+
+and
+
+\begin{equation}
+\label{vdw_cohesive}
+p_{co} = - a \rho\left(\mathbold{r},H\right)^{2}
+\end{equation}.
+
+
+\subsection{Constitutive relations for capillary pressure}
+The capillary pressure appears as a result of density gradients. Along with the
+long range isotropic pressure it is responsible for part of the surface
+tension.
+
+\begin{equation}
+\label{gradient_pressure}
+\mathbold{C} = -M \left(   \rho \nabla^{2} \rho + \frac{1}{2} | \nabla \rho | ^{2} \right) \mathbold{1} + M \nabla \rho \nabla \rho
+\end{equation}
+
+% CONSTITUTIVE RELATIONS FOR VISCOSITY
+% ------------------------------------------
+
+\subsection{Constitutive relations for viscosity}
+Only the standard Navier-Stokes expressions for shear and bulk viscosity are
+currently implemented. The shear viscosity is given by
+
+\begin{equation}
+\label{shear_viscosity_constitutive}
+\mathbold{\Pi}^{os} = -2 \eta \nabla \mathbold{v}^{os}
+\end{equation}
+
+and the bulk viscosity by
+
+\paragraph{Bulk Viscosity}
+\begin{equation}
+\label{bulk_viscosity_constitutive}
+\Pi = -\eta_{v} \nabla \cdot \mathbold{v},
+\end{equation}
+
+where the symmetric traceless velocity gradient is
+
+\begin{equation}
+\label{grad_v_os}
+\mathbold{v}_{os} = \frac{1}{2} \left(\nabla \mathbold{v} + (\nabla \mathbold{v})^{T}\right) 
+- \frac{1}{d} \left(\nabla \cdot \mathbold{v} \right) \mathbold{1}.
+\end{equation}
+
+% \subsection{viscous term}
+% \begin{equation}
+% \Pi = \eta ( 
+% \end{equation}
+
+%we calculate
+
+% \begin{eqnarray}
+% \Pi_{xxi} &=& \sum_j \frac{m_j}{\rho_j}( \frac{\eta_v}{\eta} ) 2 ( (v_{xij} \frac{\delta w}{\delta x}) - (v_{yij} \frac{\delta w}{\delta y})) \\
+% \Pi_{xxj} &=& \\
+% \Pi_{xyi} &=& \\
+% \Pi_{xyj} &=& \\
+% \Pi_{yyi} &=& \\
+% \Pi_{yyj} &=&
+% \end{eqnarray}
+
+\subsection{Constitutive relations for the energy equation}
+
+The caloric equation relates the temperature to the density, internal energy,
+and material properties.  For the van der Waals equation this is
+
+\begin{equation}
+t = \frac{e + a \rho}{k_b}
+\end{equation}
+
+When using the separated van der Waals equation, for consistency the long range
+density and kernel needs to be used to convolute the long range pressure
+contribution.
+
+%\paragraph{Van der Waals with gradient term}
+%\begin{equation}
+%t = \frac{u + a \rho + \frac{c(\nabla \rho)^2}{\rho}}{k_b}
+%\end{equation}
+
+%
+% NUMERICAL TERMS
+%
+
+\section{Numerical Correction Terms}
+
+%
+% ARTIFICIAL VISCOSITY
+%
+
+\subsection{Artificial Viscosity}
+Artificial viscosity prevents numerical instabilities in the treatment of
+shocks,by spreading pressure waves over a few particle spacings, in a manner
+analagous to artificial viscosity in grid based methods. \cite[Hoover 2005
+p46,90]{hoover_smooth_2006} \cite[Liu 2003 p125]{liu_smoothed_2003} 
+
+Von Neumann-Richtmeyer (VNR) artificial viscosity increases the bulk viscosity
+artificially for negative velocity divergence - $ \nabla \cdot v < 0 $ i.e.
+only for compression.  It is usually implemented as a linear term and a
+quadratic term in the velocity divergence. In the linear term $c$ is the speed
+of sound, and $h$, the smoothing length is the desired shockfront width.
+$\alpha_{1}$ and $\alpha_{2}$ are coefficients that can be tuned to the
+particular system, usually set to around 1. The artificial viscosity
+contributions to the pressure tensor are given by a linear term
+
+% LINEAR ARTIFICIAL VISCOSITY
+\begin{eqnarray}
+\label{linear_vnr_avsic}
+\mathbold{\Pi}_{VNR\_1} &=& -\rho \alpha_{1} hc \nabla \cdot \mathbold{v} \\
+&=& \dot{\rho} hc
+\end{eqnarray}
+
+and a quadratic term
+
+% QUADRATIC ARTIFICIAL VISCOSITY
+\begin{eqnarray}
+\label{quad_vnr_avisc}
+\mathbold{\Pi}_{VNR\_2} &=& \alpha_{2} h^{2} \rho (\nabla \cdot v)^2 \\
+&=& \dot{\rho}^{2} \frac{h^{2}}{\rho}
+\end{eqnarray}
+
+This is computed for each pair of particles, for example the quadratic term
+contribution for each member of a pair is computed as
+
+\begin{eqnarray}
+\mathbold{\Pi}_{VNR} &=& \rho_{ij} h_{ij}^{2} 
+\left( \nabla \cdot \mathbold{v} \right)_{ij}^{2} \\
+&=& \rho_{ij} h_{ij}^{2} \left( \mathbold{v}_{ij} 
+\cdot \frac{\mathbold{r}_{ij}}{r_{ij}} W_{ij} \right)^{2}
+\end{eqnarray}
+
+\paragraph{}
+Monaghan's formulation of artificial viscosity is widely used in SPH codes.
+Only the beta term is required if the simulation has a physical
+viscosity.\cite{liu_smoothed_2003} Only the beta term is currently implemented.
+This term assist with preventing unphysical particle interpenetration. The
+system's speed of sound is needed in order to calculate the monaghan alpha term
+
+\begin{equation}
+\label{monag_beta_avisc}
+\Pi_{\beta} = \frac{ \beta \Phi_{ij}^{2}}{\rho_{ij}}
+\end{equation}
+
+with 
+
+\[
+\Phi = \frac{ h_{ij} \mathbold{v_{ij}} \cdot \mathbold{r_{ij}} } { \mathbold{r_{ij}}^2 + 0.1 h_ij } 
+\].
+
+References: Hoover book, p46, Liu book, p125, Von Neumann and Richtmyer 1950,
+Lattanzio et al 1986, Monaghan 1989, Sigalotti 06, Monaghan 97.
+
+% CORE REPULSION
+% --------------
+\subsection{Core repulsion}
+
+To further prevent particle interpenetration and clumping we use the core
+potential suggested by Hoover in \cite{hoover_smooth_2006}.
+
+\begin{equation}
+\label{core_potential} 
+\phi = \sum_{r_{ij} < } r_{c}\frac{1}{4} 
+\left( 1 - \left( \frac{r_{ij}}{\sigma} \right)^2 \right)^4
+\end{equation}
+
+The force $\frac{d \phi}{dr}$ is
+
+\begin{equation}
+ \label{core_repulsion}
+F_{c} = c_{r} \frac{2r}{\sigma^2} \left( - \frac{r^2}{\sigma^2} + 1 \right)^{3}
+\end{equation}
+
+Where $c_{r}$ is a coefficient that determines the strength of the repulsion ,
+and $\sigma$ gives the core size. This force is minimal for large distances. Its
+effects are included in the pressure-volume work.
+% How is it included in the PV work?
+
+\subsection{Adaptive Smoothing Length}
+An adaptive density kernel estimation described by Sigallotti in (ref) is
+implemented.  Informal testing indicates that it is not good for gas-only
+simulations and tends to lead to greater disorder among the particles. The code
+for accomplishing this is in \texttt{kernel.f90}
+
+This method works by first computing a pilot density for each particle via the
+summation density equation, using the initial smoothing length. Then the ratio
+of the pilot density to the average density across all particles is used to
+compute a bandwidth factor, by which the initial smoothing length is scaled.
+
+\begin{enumerate}
+\item Compute kernel widths for all pairs based on the initial smoothing length
+(Sigalotti reports that the final adapted kernel width is not sensitive to the
+value of this initial smoothing length). We choose $k=1$ and
+$\epsilon=\frac{1}{2}$ as recommended.
+
+\begin{equation}
+W_{ij} = W(r_{j} - r_{i},h_{0})
+\end{equation}
+
+\item Use this kernel to compute a pilot density $\rho_{a}$ with equation
+\ref{density_summation}
+
+\item Compute an average density. Sigalotti uses a geometric mean, I use an
+arithmetic mean. \graffito{this is probably not a big deal.}
+
+\begin{equation}
+\bar{\rho} = \sum \rho_{i} / n
+\end{equation}
+
+\item Rescale each particle's smoothing length based on the ratio of its
+density to the average density.
+
+\begin{equation}
+h_{i} = h_{0} \left(\frac{\rho_{ai}}{\bar{\rho}}\right)^{\frac{1}{2}}
+\end{equation}
+
+\end{enumerate}
+
+My implementation computes the pilot density from $h_0$ every step. It is
+conceivable that the updated smoothing length could be used instead. For
+summations over particles the mean smoothing length of each pair is used to
+keep symmetry.
+
+% BOUNDARY CONDITIONS
+% -------------------
+\section{Boundary Conditions}
+
+\subsection{Periodic Boundaries}
+Periodic boundary conditions, and the minimum image interaction from
+\texttt{neighbour\_list} are utilised. Boundary conditions are applied when the
+neighbour list is formed.
+
+\subsection{Hard Boundaries}
+Hard boundaries can be set up with a simple elastic reflection condition, with
+boundary particles arranged along the boundary, or both. Boundary particles
+interact with a core repulsion, and a smoothed particle heat conduction term
+only.
+
+% NEIGHBOUR LIST
+% --------------
+\section{Neighbour Finding}
+A Verlet list with simple elimination of pairs outside the cutoff radius at
+each step has proven adequate for our purposes.
+
+The neighbour list data structure contains pair indices, relative positions,
+relative velocities and other neighbourly properties including kernel
+magnitudes and kernel gradients.
+
+\texttt{iindex} and \texttt{jindex} contain all potential pairs, with the
+integer \texttt{npairs} giving the number of pairs calculated by the raw cell
+or brute methods before truncation. \texttt{n\_list} contains all pairs in the
+search radius, with \texttt{nab} giving the number of pairs inside the search
+radius. \texttt{i\_list}, with size given by \texttt{nip}contains all pairs
+within interaction range. 
+
+\texttt{form\_nlist} generates iindex and jindex, performs a search radius
+exclusion, and generates nlist. When any pair have moved relative to each other
+greater than the search radius distance, the list is rebuilt.
+\texttt{calculate\_pair\_separations} computes interparticle distances for all
+pairs within the search radius and generates the cutoff exculsion mask.
+\texttt{compress\_nlist} applies the cutoff exclusion mask, generating ilist,
+repacking the interparticle distances and computing all other neighbourly
+properties. In configuring the neighbour list a balance must be struck between
+a large search radius (and thus more pairs to compute distances for in each
+compression) and a small search radius requiring more frequent and costly list
+rebuilds.
+	
+% FORCE LOOP
+\section{SPH force calculation}
+The force calculation computes new values of $\frac{dv}{dt}$ and
+$\frac{de}{dt}$ based on the state of the system. Most integration methods call
+the force computation several times.  First the pressure tensors are
+constructed from the constitutive relations in the following steps:
+
+\begin{enumerate}
+\item Calculate $\nabla \mathbold{v}_i$ for each particle 
+    (equation \ref{grad_v});
+\item Calculate $\left(\nabla \cdot \mathbold{v}\right)_{i}$ for each particle 
+    (equation \ref{div_v}) ;
+\item Calculate $\left(\nabla \mathbold{v}_{os}\right)_{i}$ for each particle 
+    (equation \ref{grad_v_os});
+\item Calculate isotropic repulsive pressure $p_{r}$ and long range isotropic
+    cohesive pressure $p_{co}$ from equation of state 
+    (equation \ref{vdw_eos_sep});
+\item calculate capillary pressure $\mathbold{C}$ 
+    (equation \ref{gradient_pressure});
+\item combine $\mathbold{C}$ and $p_{co}$ into one long range reversible
+    pressure tensor $\mathbf{P}_{L}$ 
+    (equation \ref{pressure_tensor}).
+\item calculate irreversible symmetric traceless pressure tensor $\Pi_{os}$
+    (equation \ref{shear_viscosity_constitutive} );
+\item calculate bulk stress pressure tensor $\Pi$ 
+    (equation \ref{bulk_viscosity_constitutive});
+\item combine $\mathbold{\Pi}_{OS}$ and $\Pi$ into $\mathbold{\Pi}$
+\item calculate viscous entropy ($T\frac{ds}{dt}$) from \texttt{p\_irr}
+    \texttt{calc\_viscous\_entropy\_os}
+\item calculate the heat flux vector \texttt{calc\_heat\_flux}
+\end{enumerate}	
+
+Then forces are accumulated for each pair,
+\begin{enumerate}
+\item loop over all pairs
+
+    \begin{enumerate}
+    \item reset accumulators for  \texttt{hx,hy,he}
+    \item calculate artificial viscosity for the pair
+    \item apply the core repulsion force
+    \item calculate sph contribution to acceleration due to reversible pressure
+        and add it to \texttt{hx, hy}(p and pco seperately)
+    \item add artificial viscosity to \texttt{hx,hy}
+    \item calculate reversible (pv) work
+    \item calculate sph contribution to acceleration due to irreversible
+        pressure and add it to \texttt{hx,hy}
+    \item update acceleration \texttt{ax = ax + m*hx}, adding the core repulsion if present.
+    \item calculate heat conduction for pair
+    \item add pv work to dedt
+    \end{enumerate}
+	  
+\item add (\texttt{tdsdt}) to dedt 
+ 
+\end{enumerate}
+
+\section{Numerical Integration}
+An advantage of smooth particles is that the partial differential equations of
+continuum mechanics are converted to ordinary differential equations governing
+the motion of particles. This enables us to use standard numerical integration
+techniques to advance the simulation forward in time.
+
+A naive one step integration would perform these calculations in this order
+\begin {enumerate}
+\item Pair seperations; 
+\item Collisions; 
+\item Kernels and kernel gradients; 
+\item Densities; 
+\item Temperatures; 
+\item Apply thermostat; 
+\item SPAM forces; 
+\item Body force;
+\item Smooth velocities;
+\item If smoothed values for other properties are required this is the most
+    convenient place to compute them.
+\item Update positions, velocities and energy; 
+\item Apply boundary conditions; 
+\item Rebuild neighbour list if required.
+\end{enumerate}
+
+\subsection{Leapfrog Integration}
+A modified leapfrog algorithm described in Melean
+\cite[]{melean_coalescence_2005} is implemented. For each timestep of size
+$h=t_{i+1} - t_{i}$, a time-centred projection of the system is computed, using
+the previous step's time-centred position:
+
+\begin{eqnarray}
+\label{leapfrog_x1}
+\mathbold{x}_{n+\frac{1}{2}} &=& \mathbold{x}_{n-\frac{1}{2}} + h\mathbold{v} \\
+\label{leapfrog_v1}
+\mathbold{v}_{n+\frac{1}{2}} &=& \mathbold{v}_{n} + \frac{h}{2} \mathbold{a}_{n} \\
+\label{leapfrog_u1}
+u_{n+\frac{1}{2}} &=& \mathbold{u}_{n} + \frac{h}{2} \dot{u}_{n}
+\end{eqnarray}
+
+The permanent particle structure needs an xhalf member in order to carry
+$x_{n-\frac{1}{2}}$ to the next step. A full particle structure (called
+\texttt{p\_cent} in code) is required to hold the intermediate quantities. The
+positions of the intermediate particles are set to xhalf.  Particle
+separations, kernel values, densities, temperatures and finally the rates of
+change $\mathbold{a}_{n+\frac{1}{2}}, \dot{u}_{n+\frac{1}{2}}$ are computed for
+the time-centred state.  Then the time centred values are used to project the
+system a full timestep.
+
+\begin{eqnarray} \label{leapfrog_x2}
+\mathbold{x}_{n+1} &=& \mathbold{x}_{n} + h \mathbold{v}_{n + \frac{1}{2} } \\
+\label{leapfrog_v2}
+\mathbold{v}_{n+1} &=& \mathbold{v}_{n} + h \mathbold{a}_{n + \frac{1}{2} } \\
+\label{leapfrog_u2}
+u_{n+1} &=& \mathbold{u}_{n} + h \dot{u}_{n + \frac{1}{2} }
+\end{eqnarray}
+
+The full integration step proceeds as follows:
+\begin{enumerate}
+\item calculate time centred position and velocity using 
+    \ref{leapfrog_x1}, \ref{leapfrog_v1}, \ref{leapfrog_u1}
+\item apply periodic and/or reflective boundary conditions
+\item check neighbour list reformation condition and reform if indicated
+\item calculate pair separations using \texttt{p\_comp} positions, and compress
+    neighbour list
+\item calculate kernels, kernel gradients for all pairs
+\item summation density
+\item recalculate temperature with new density
+\item call \texttt{sphforce} on \texttt{p\_comp} to obtain time-centred rates
+    of change
+\item update x,v,u using \ref{leapfrog_x2},\ref{leapfrog_v2},\ref{leapfrog_u2}
+\item update temperatures 
+\item apply thermostat
+\item apply boundary conditions
+\item calculate smoothed values at particle locations
+\end{enumerate}
+
+\subsection{Improved Euler}
+
+\subsection{Runge-Kutta Fourth Order}
+The Runge-Kutta integration proceeds aas follows, where \(f\) is the function
+that returns the rates of change for the system:
+
+\begin{eqnarray}
+\label{rk4}
+k_{1} &=& f\left(t_{n},X_{n}\right) \\
+k_{2} &=& f\left(t_{n} + \frac{1}{2}dt, X_n + \frac{1}{2}dtk_{1} \right) \\
+k_{3} &=& f\left(t_{n} + \frac{1}{2}dt, X_n + \frac{1}{2}dtk_{2} \right) \\
+k_{4} &=& f \left(t_{n} + dt, X_n + dtk_{3} \right)                \\
+y_{n+1} &=& y_{n} + \frac{1}{6}dt \left(k_{1} + 2k_{2} + 2k_{3} + k_{4} \right) \\
+t_{n+1} &=& t_{n} + dt 
+\end{eqnarray}
+
+
+\myChapter{Model Configuration}
+
+\section{Configuration}
+
+SPAC expects its plain text  input file \texttt{spinput.txt} to be present.
+This file sets the values of variables and execution flags. Configuration
+parameters are specified as key-value pairs, with optional comments in a third
+column. The parser is not measurably sophisticated so make no assumptions of
+robustness. Data types for configuration values are either integer, floating
+point or boolean. For most parameters this is obvious - inspect the supplied
+configuration files for the tests if in doubt. Where this is not clear from the
+context it will be specified. Fortran 90 expects boolean input formatted as
+\texttt{.f.} for false and \texttt{.t.} for true. Failure to find a
+configuration option will cause program execution to halt.
+
+\subsection{General Configuration}
+\begin{description}
+\item[DIM] Number of dimensions. The current version has only been tested in
+    two dimensions.
+\item[N] Number of particles . This is fixed. Increasing the number of
+    particles will increase the execution time. The simulation box must be sized
+    appropriately.
+\item[DT] Timestep size. Typical values are 0.005 for the leapfrog integration
+    method and 0.05 for the fourth order Runge Kutta integration method.
+\item[CUTOFF] Cutoff radius. At seperations greater than this the interparticle
+    force is zero.
+\item[TSTEPS] Number of steps to take before ending the simulation.
+\item[SNAPFREQ] Frequency at which to output snapshot files capturing the
+    system state.
+\item[RUN\_TYPE] Run type. Determines the initialisation behaviour,
+    \begin{itemize}
+    \item  0=normal. The initial configuration will be a rectangle with
+        particle spacing and side length given by SIDE and SPACING.   
+    \item 1=load from file. Particle state will be loaded from the file named
+        sphstate.input in the run directory.
+    \item  2=load from file but set temp. Particle state will be loaded from
+        the file named sphstate.input in the run directory, but temperatures
+        will be set to STARTTEMP, and internal energies will be set via the
+        equation of state for this temperature.
+    \end{itemize}
+\item[INTEGRATOR] Integration step type.
+    \begin{itemize}
+    \item 1=Improved Euler. A two step predictor-corrector method.     
+    \item 2=Leapfrog. A modified leapfrog integration method described in
+        \cite[]{melean_sph_2004}       
+    \item 3= Fourth order Runge Kutta. For a description see
+        \cite[]{hoover_smooth_2006}
+    \end{itemize}
+\item[ADAPT\_DT] Adaptive timestep. Some options are placeholders and the
+    subroutines have not yet been implemented (2008).
+    \begin{itemize}
+    \item 0 None     
+    \item 1 Energy conservation (experimental)
+    \item 2 CFL (experimental)
+     \end{itemize}   
+
+\item[TOLERANCE] Fraction tolerance in the total system energy per
+timestep. Used for the energy conservation adaptive timestep option.
+\end{description}
+
+\subsection{Boundary Setup}
+\begin{description}
+\item[NBOUNDS] Number of boundary particle systems
+\item[NBP\_1] Number of boundary particles in system 1
+\item[NBP\_2] Number of boundary particles in system 2
+\item[XMAX] x dimension of box 
+\item[YMAX] y dimension of box
+ \end{description}
+ 
+ \subsection{Initial Particle Configuration}
+ \begin{description}
+\item[SIDE] Side length of the starting rectangle for particles.
+\item[SPACING] Spacing of particles in their starting configuration.
+\item[STARTTEMP] Starting temperature. Sets the temperatures and internal
+energies of all particles.
+\end{description}
+
+\subsection{Debugging Settings}
+\begin{description}
+\item[VERBOSE] Provides a running commentary to the standard output, about ten
+    lines per step.
+\item[DEBUG] Provides an insane amount of detailed output to the standard
+    output.
+\item[CONFIRM] Prompts the user to hit enter at the end of each step.
+\item[PROFILE] Switches profiling of selected code segments on. Switch off for
+    maximum execution speed.
+\item[VALIDATE] Checks particle a neighbour list structures for NaNs and other
+    badness. This adds overhead so use it for test runs only.
+\end{description}
+
+% ALGORITHMIC CONFIGURATION SECTION
+% ---------------------------------
+
+\subsection{Algorithmic Configuration}
+\begin{description}
+
+\item[ENTROPYTYPE] Determines the calculation method for the viscous part
+of the stress tensor. 
+    \begin{itemize}
+    \item 1 = Approximate viscosity calculation as used in Liu and Liu
+    \cite[]{liu_smoothed_2003}.
+    \item 2 = Full calculation of viscosity as used in
+    \cite[]{sigalotti_sph_2003}.
+    \end{itemize}
+
+\item[ART\_VISC] Artificial viscosity type. Ther direct von Neumann-Richtmeyer
+    algorithm has not been extensively tested.
+    \begin{itemize}
+    \item 0 = none 
+    \item 1= von Neumann-Richtmeyer \cite[]{hoover_smooth_2006}
+    \item 2 = Mongahan beta term (see Liu and Liu page?\cite{liu_smoothed_2003})
+    \end{itemize}
+
+\item[CONDUCTION] Conduction type. In condensation problems typically the
+    conductivity is set quite high, so the method of calculating heat flux does not
+    seem to make a great deal of difference. Monaghan's algorithm is faster, and it
+    is claimed to be less sensitive to interpolation errors in second 
+    derivatives.
+    \begin{itemize}
+    \item  1= heat flux as in Monaghan and Cleary \cite{cleary_conduction_2006}
+    \item  2 = full heat flux as in Nugent and Posch \cite[]{nugent_liquid_2000}
+    \end{itemize}
+  
+\item[CORE\_SIZE] Radius of the repulsive core potential between particles.
+    This ad-hoc repulsive force keeps particles from coming too close.
+    \cite[]{hoover_smooth_2006}
+
+\item[REPULSION] Strength of repulsion between particles (negative for
+    repulsion). Values around 1 give a reliable repulsion without appearing to
+    dominate the dynamics. If this repulsion is nonzero its contribution to the
+    pressure work is included.
+
+\item[RESTRICT\_V] (int)  Whether to restrict maximum velocity.
+
+\item[RHO\_EQ]      Density equation
+    \begin{itemize}
+    \item 0 = summation
+    \item 1 = continuity (not implemented)
+    \end{itemize}
+
+\item[UNSTABLE\_RHO]  (int)  What to do when the density becomes unrecoverably
+    unstable. For the van der Waals equation of state this occurs when the density
+    is 2.0 or greater. 
+    \begin{itemize}
+    \item 0 = do nothing
+    \item 1 = stop
+    \item 2 = set pressure to 0 
+    \end{itemize}
+
+\item[VELOCITY\_AVG] 1    Velocity averaging scheme  (int)
+    \begin{itemize}
+    \item 0 = none 
+    \item 1 = monaghan(vj-vi)(mj/rhoj)wij) \cite[]{monaghan_smoothed_1992}
+    \end{itemize}
+
+\item[V\_EPS] 0.5 (fp)   Coefficient for velocity smoothing
+\item[ETA] 1.0  eta - shear viscosity (fp)
+\item[ZETA] 0.1  zeta - bulk viscosity (fp)
+\item[SOUND\_SPEED] 0.0  c (speed of sound)
+\end{description}
+
+\subsection{Thermostat Configuration}
+\begin{description}
+\item[THERMOSTAT\_TYPE 1]       Thermostat type (int)
+  \begin{itemize}
+  \item 0 = none, 
+  \item 1= Scaling thermostat. 
+  \item 2=Absolute.
+  \end{itemize}
+\item[THERMOSTAT\_BOUNDARY]  Whether to thermostat boundary particles
+\item[THERMOSTAT\_PARTICLES]  Whether to thermostat main particles
+\item[THERMOSTAT\_TEMP 0.9]   Desired temperature for main particles (fp)
+\item[B1\_TEMPERATURE] Temperature of first set of boundary particles    
+\item[B2\_TEMPERATURE] Temperature of second set of boundary particles    
+\end{description}
+
+The scaling thermostat keeps the average temperature constant while allowing
+fluctuations. There are indications that the scaling thermostat can lead to
+instability under some conditions. The average temperature $T_{A}$ is
+calculated over all particles by
+%
+\[ T_{A} = \sum_{i}^{n} \frac{T_{i}}{n} \].
+
+For all particles the thermostat is applied by
+\begin{equation}
+ \label{scaling_thermostat}
+  T_{i,scaled} = \frac{T_{D}}{T_{A}} T_{i}
+\end{equation}
+
+\begin{description}
+\item[EOS 3]       Equation of state type ( (int)
+    \begin{itemize}
+    \item 1=ideal gas 
+    \item 2=vanderwaals 
+    \item 3=vanderwaal seperated 
+    \item 4=gradient term
+    \end{itemize}
+\item[ADASH]        adash (fp)
+\item[BDASH]        bdash (fp)
+\item[KBDASH]       kbdash (fp)
+\item[CGRAD]        cgrad  (for gradient term)  (fp)
+\item[KERNEL]       Kernel type (int)
+    \begin{itemize}
+       \item  1=Gaussian 
+       \item  2=Lucy's Quartic 
+       \item  3=Delrun spiky 
+       \item  4=spiky/lucy combo
+    \end{itemize}
+\item[H]      initial smoothing length (fp)
+\item[ADAPT\_H]       Adapt smoothing length  (int)
+\begin{itemize}
+\item 0=none
+\item 1=basic h=ho*(rho\_o/rho)\^(1/d)
+\item 2=  Adaptive density kernel estimation \cite[]{sigalotti_shock-capturing_2006}
+\end{itemize}
+\item[HCO]       cohesive smoothing length (fp)
+\end{description}
+
+\subsection{Boundary Configuration}
+Options for reflective boundaries, and boundary particles with their own
+repulsive interaction and normal SPH interaction.
+
+\begin{description}
+\item[REFLECT\_XMIN] .f.       Whether to reflect at left box boundary.
+\item[REFLECT\_XMAX] .f.       Whether to reflect at right box boundary.
+\item[REFLECT\_YMIN] .f.       Whether to reflect at bottom box boundary.
+\item[REFLECT\_YMAX] .f.       Whether to reflect at top box boundary.
+\item[BOUNDARY\_CORE]  -5.0 Core potential for boundary particles.
+\item[BOUNDARY\_SIGMA] 1.0 Size of boundary core potential.
+\item[GRAVITY] - 0.000008 External force (points in the -y direction).
+\item[B1\_TEMPERATURE] 2.5 Temperature boundary particles are thermostatted at.
+\end{description}
+
+\subsection{Simulation Box Configuration}
+\begin{description}
+\item[NDIM] 2        Number of dimensions. Only 2 is supported.
+\item[ORIGIN] 0      Simulation box origin type (0=lower left, 1=centre).
+\item[SHELL] 0.5     Neighbour list tolerance shell.
+\item[NLTYPE] 1      Type of neighbour list:
+\begin{itemize}
+\item  1 = all particles
+\item  2 = cell method (experimental)
+\end{itemize}
+\item[NLREFORM] 2       nlist\_reform\_type (1 = particle displacements, 2 = pair separations) 
+\item[MAXPN] 2500    max number of neighbours per particle (int)
+\item[MAXDEN] 30.0   max density in cell (used in cell code - usually 3.0) (fp)
+\end{description}
+
+% EXECUTION SECTION
+% -----------------
+\section{Execution}
+Default behaviour is to run in place.
+
+\begin{verbatim}
+./fsph
+\end{verbatim}
+
+The python script \texttt{run.py} can be used to create seperate run directories, and to
+kick off any output processing jobs.
+
+\begin{verbatim}
+./run.py april21_test_run
+cd ../results/april21_test_run
+\end{verbatim}
+
+% OUTPUT SECTION
+% --------------
+\section{Output}
+Output is space delimited ASCII, in the following format, and stored in two
+kinds of files.  Snapshot files are dumped at the frequency specified in the
+configuration file, and numbered sequentially:
+sphstate.00000000,sphstate.00000002,sphstate.00000004 ... The number of the
+file gives the timestep number.
+
+The primary output file is sphstate.x where x is an 8 digit integer, e.g.
+sphstate.00000000.  The module \texttt{writer.f90} handles the writing out of
+data to file.
+
+\begin{verbatim}
+state snapshot files
+
+! column 1 - x position
+! column 2 - y position 
+! column 3 - x velocity
+! column 4 - y velocity
+! column 5 - x acceleration
+! column 6 - y aceleration
+! column 7 - temperature
+! column 8 - internal energy
+! column 9 - mass
+! column 10 - density
+! column 11 - pressure
+! column 12 - speed of sound
+! column 13 - viscosity
+! column 14 - smoothing length
+! column 15 - heat flux vector, x direction
+! column 16 - heat flux vector, y direction
+! column 17 - smoothed velocity, x
+! column 18 - smoothed velocity, y
+! column 19 - smoothed pressure
+! column 20 - smoothed temperature
+! column 21 - density gradient x
+! column 22 - density gradient y
+
+Properties file
+!! column 1 - kinetic energy
+!! column 2 - potential energy 
+!! column 3 - average temperature
+!! column 4 - average density
+!! column 5 - thermostat energy 
+!! column 6 - total energy with thermostat contribution subtracted 
+!! column 7 - timestep size (for this step)
+!! column 8 - system time elapsed for this step
+
+\end{verbatim}
+
+\subsection{Plotting output data}
+The popular and free python plotting package Matplotlib can be used to plot
+SPAC output data using the following code:
+
+\begin{verbatim}
+python
+import pylab
+a = pylab.load("sphstate.00000000")
+# a[:,0] contains all particles' x postions.
+# a[:,1] contains all particles' y postions.
+# matlab(r) style formatting strings can be used
+pylab.plot(a[:,0],a[:,1],'.')
+\end{verbatim}.
+
+Additionally, a number of output processing programs are found in the fsp\_post
+directory.
+
+\section{Integrated Tests}
+The script \texttt{run.py} is designed to drive the execution of the program,
+although the program can be run independently as an executable.  Several test
+cases can be kicked off by \texttt{run.py}. These tests are designed to
+exercise as much of the code as possible. Test output is stored in the source
+directory, and deleted by the default \texttt{make clean} command.
+
+'Tests' is maybe a misnomer - these are not unit tests that check each
+subroutine against a spec, but a series of small runs designed so that the user
+checks the graphical output.
+
+On a 2008 model Macbook Pro the full set takes about 1.5 hours.
+
+\texttt{testall.py} provides a convenient way to run all integrated tests
+sequentially. The test scripts depend on the \texttt{VASP} set of visualisation
+and analysis modules.
+
+The python script \texttt{manual\_report.py} generates a PDF summarising the
+test results.
+
+\section{Module Descriptions}
+Section titles here refer to the actual filename of the modules, without the
+.f90 extension.
+
+
+
+
+
+\bibliography{sphbib}
+\bibliographystyle{plain}
+
+\appendix
+%********************************************************************
+% Appendix
+%*******************************************************
+\myChapter{Appendix}
+\section{Appendix 1. General Definitions}
+\begin{equation}
+\label{difference}
+ \mathbold{f}_{ij}  = \mathbold{f}_j - \mathbold{f}_i
+\end{equation}
+
+
+\end{document}

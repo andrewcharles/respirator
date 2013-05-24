@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo 1>&2 One and only one argument please
+  exit 127
+fi
+
+dirname=$1
+#if [ -e ../runs/$dirname ]
+#then
+#echo dir exists
+#else
+#echo hu
+#mkdir ../results/$dirname
+#fi
+
+#mv -f $dirname ../results/
+#cp ../vasp/plotem ../runs/$dirname
+#cp ../vasp/splash/columns ../runs/$dirname
+#cp ../vasp/splash/splash.defaults ../runs/$dirname
+#cp ../vasp/splash/splash.limits ../runs/$dirname
+# don't copy the script - run it centrally
+#cp ../python/plot/plotsph.py ../runs/$dirname
+exit 0
