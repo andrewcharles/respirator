@@ -6,7 +6,7 @@ sudo apt-get install mercurial
 
 # THEN GET THE CODE
 -----------------------------------
-hg clone https://YOUR-USERNAME@bitbucket.org/ac1201/smoothparticles rsp
+git clone git@bitbucket.org:ac1201/respirator.git rsp
 (Will need to be given access to the repo)
 
 
