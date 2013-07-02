@@ -11,18 +11,7 @@
 """
 
 from config_lib.basic import *
-from config_lib.droplet_500 import *
-from config_lib.quench_500 import *
-from config_lib.gas_c import *
-from config_lib.grand_quench import *
-from config_lib.grand_droplet import *
-from config_lib.grand_expand import *
-from config_lib.grand_long import *
-from config_lib.grand_coexist_cube import *
-from config_lib.mini_phase import *
-from config_lib.twog import *
-from config_lib.threeg import *
-from config_lib.testing import *
+#from config_lib.testing import *
 
 class tiny_fcc_relax(object):
     """ A low compute cost basic functional testing configuration. """
